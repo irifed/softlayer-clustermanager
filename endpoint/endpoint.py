@@ -49,7 +49,7 @@ def order():
     # TODO guard by try..catch
     token = request.args.get('token')
 
-    # fetch event info from REST API event_url_template
+    # fetch event info from REST API by `token`
     # see docs at http://info.appdirect.com/developers/docs/api_integration/subscription_management/subscription_order_event
     event_url = event_url_template.format(token)
     response = requests.get(event_url)
