@@ -1,8 +1,8 @@
 import logging
 import uuid
 
-from models import db
-from cluster import create_cluster
+from models import db, Cluster
+from clustermanager import create_cluster
 
 xml_order_ok = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <result>
@@ -54,10 +54,13 @@ def CreateOrder(event_xml):
     creator = event_xml.creator.CreateUserModel(companySubscription)
     db.session.add(creator)
 
-    cluster_id = uuid.uuid4()
-    # TODO store it in the database
+    cluster_id = str(uuid.uuid4())
+    # TODO ask num_workers from user using interactive endpoint
+    num_workers = 5
+    owner_id = creator.by_openid(creator.openid)
+    cluster = Cluster(uuid=cluster_id, num_workers=num_workers, owner_id=owner_id)
+    db.session.add(cluster)
 
-    # TODO fire up vagrant with unique id
     create_cluster(cluster_id)
 
     db.session.commit()

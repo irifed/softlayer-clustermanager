@@ -51,8 +51,7 @@ class UserXml(Document):
 
     """Creates a datastore model"""
     def CreateUserModel(self, companySubscription):
-        # TODO implement user = User.get_or_insert(self.openid)
-        user = User()
+        user = User.get_or_insert(self.openid)
         user.email = self.email
         user.openid = self.openid
         user.first = self.firstName

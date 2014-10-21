@@ -75,11 +75,13 @@ if __name__ == "__main__":
     
     
     #set location of vagrant-cluster repo
-    cleanrepo = "/home/a/Desktop/irinastuff/cleanrepo/vagrant-cluster"
+    #cleanrepo = "/home/a/Desktop/irinastuff/cleanrepo/vagrant-cluster"
+    cleanrepo = "/Users/irina/tmp/vagrant-cluster"
     
     
     #set location of directory where all vagrant folders will be saved
-    vagrantroot = "/home/a/Desktop/workspace/marketplace_stuff/vagrantdir"
+    #vagrantroot = "/home/a/Desktop/workspace/marketplace_stuff/vagrantdir"
+    vagrantroot = "/Users/irina/tmp/vagrantdir"
     
     randomnum = randint(0,sys.maxint) 
     curdir =vagrantroot + str(randomnum)
