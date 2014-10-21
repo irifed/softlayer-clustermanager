@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import shutil
 from random import randint
 import sys
@@ -63,8 +65,8 @@ if __name__ == "__main__":
     
     #anewman 3895933cc65d8099c71e48a6357b7b6ba5b5668b85e1ef5f253dd6415cdf2d05 alanbaresj /home/a/Desktop/key/id_rsa hi.com wdc01 2
     
-    if sys.argv[1] == "-h" or len(sys.argv) != 8:
-        print "usage: <sl_username> <sl_api_key> <sl_ssh_key> <sl_private_key_path> <custom_domain> <sl_datacenter> <numworkers>" 
+    if len(sys.argv) != 8 or sys.argv[1] == "-h":
+        print "usage: <sl_username> <sl_api_key> <sl_ssh_key> <sl_private_key_path> <custom_domain> <sl_datacenter> <numworkers>"
         sys.exit(0)
         
 #     print sys.argv[1]
