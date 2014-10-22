@@ -7,6 +7,7 @@ from models import CompanySubscription
 
 from xml.dom.minidom import Document
 
+
 class EventXml(Document):
     eventXml = None
     eventType = None
@@ -25,6 +26,7 @@ class EventXml(Document):
     def __str__(self):
         return self.prettyPrint
 
+
 class UserXml(Document):
     userXml = None
     openid = None
@@ -39,6 +41,8 @@ class UserXml(Document):
         self.userXml = elements[0]
         self.openid = self.userXml.getElementsByTagName("openId")[0]\
             .childNodes[0].data
+        self.openid = self.openid.split('/')[-1]
+
         self.email = self.userXml.getElementsByTagName("email")[0]\
             .childNodes[0].data
         self.firstName = self.userXml.getElementsByTagName("firstName")[0]\
@@ -59,6 +63,7 @@ class UserXml(Document):
         user.subscription = companySubscription
         return user
 
+
 class OrderXml(Document):
     orderXml = None
     edition = None
@@ -72,6 +77,7 @@ class OrderXml(Document):
 
     def __str__(self):
         return self.edition
+
 
 class PayloadXml(Document):
     payloadXml = None
@@ -97,6 +103,7 @@ class PayloadXml(Document):
         companySubscription.website = self.company.website
         return companySubscription
 
+
 class CompanyXml(Document):
     companyXml = None
     name = None
@@ -112,6 +119,7 @@ class CompanyXml(Document):
 
     def __str__(self):
         return self.name
+
 
 class AccountXml(Document):
     accountXml = None

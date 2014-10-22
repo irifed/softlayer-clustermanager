@@ -2,7 +2,9 @@ import logging
 import uuid
 
 from models import db, Cluster
-from clustermanager import create_cluster
+from clustermanager import create_cluster, destroy_cluster
+
+logger = logging.getLogger("endpoint")
 
 xml_order_ok = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <result>
@@ -15,8 +17,7 @@ xml_success = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <result>
     <success>true</success>
     <accountIdentifier>{}</accountIdentifier>
-</result>
-'''
+</result>'''
 
 xml_order_error = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <result>
@@ -26,7 +27,7 @@ xml_order_error = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </result>'''
 
 def HandleEvent(event_xml):
-    logging.info('Received event type {}'.format(event_xml.eventType))
+    logger.info('Received event type {}'.format(event_xml.eventType))
     if event_xml.eventType == "SUBSCRIPTION_ORDER":
         return CreateOrder(event_xml)
     elif event_xml.eventType == "SUBSCRIPTION_CANCEL":
@@ -44,7 +45,7 @@ def HandleEvent(event_xml):
     #     return errorTemplate % ( "CONFIGURATION_ERROR", message)
 
 def CreateOrder(event_xml):
-    logging.info("CreateOrder {} {} {}".format(event_xml.payload.company.name,
+    logger.info("CreateOrder {} {} {}".format(event_xml.payload.company.name,
                                     event_xml.payload.company.website,
                                     event_xml.payload.order.edition))
 
@@ -69,8 +70,13 @@ def CreateOrder(event_xml):
 
 def CancelOrder(event_xml):
     cluster_id = event_xml.payload.account.accountIdentifier
-    logging.info('Destroying cluster {}'.format(cluster_id))
-    # TODO verify that cluster id exists in database
-    # TODO delete record from the database
-    # TODO destroy cluster
+    logger.info('CancelOrder {}'.format(cluster_id))
+
+    cluster = Cluster.by_uuid(cluster_id)
+    logger.debug('removing cluster {} from table Cluster'.format(cluster_id))
+    destroy_cluster(cluster_id)
+
+    db.session.delete(cluster)
+    db.session.commit()
+
     return xml_success.format(cluster_id)

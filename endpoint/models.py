@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
-
 """Database models used for the AppDirect sample Python application
 
   User: Users will belong to a company and can use the application
   Company: Companies will have subscriptions to applications
   Event: Events represent state changes in subscriptions or user assignments
 """
-
+import logging
+import pprint
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
+logger = logging.getLogger("endpoint")
 
 
 class CompanySubscription(db.Model):
@@ -65,4 +66,17 @@ class Cluster(db.Model):
 
     @classmethod
     def by_uuid(cls, uuid):
-        return db.query(cls).filter(cls.uuid == uuid).first()
+        return cls.query.filter(cls.uuid == uuid).first()
+
+    @classmethod
+    def by_openid(cls, openid):
+        # TODO return all clusters
+        logger.debug('looking for clusters owned by user with openid="{}"'.format(openid))
+        count = User.query.filter(User.openid == openid).count()
+        if count == 1:
+            owner_id = User.query.filter(User.openid == openid).first().id
+            return cls.query.filter(cls.owner_id == owner_id).first().uuid
+        else:
+            # no user found or multiple users found
+            return None
+
