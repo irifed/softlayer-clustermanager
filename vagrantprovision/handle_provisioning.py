@@ -28,7 +28,7 @@ def runProcess(command):
             masterip = out.strip().split(" ")[3]
             print "MASTER IP IS: " + masterip
     
-    print myProc.__exitstatus
+    # print myProc.__exitstatus
     
     return masterip
 
