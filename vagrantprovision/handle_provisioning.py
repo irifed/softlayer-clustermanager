@@ -6,6 +6,9 @@ import sys
 import subprocess
 import os
 from asyncproc import Process
+import threading
+from time import sleep
+
 
 def runProcess(command):
     myProc = Process(command)
@@ -28,7 +31,8 @@ def runProcess(command):
             masterip = out.strip().split(" ")[3]
             print "MASTER IP IS: " + masterip
     
-    # print myProc.__exitstatus
+#     print myProc.__exitstatus
+    
     
     return masterip
 
@@ -61,27 +65,21 @@ def runProcess(command):
 #         print "EREOREOREOREOREO"
 
 
-if __name__ == "__main__":
-    
+
+def doprovisioning(args):
+        
     #anewman 3895933cc65d8099c71e48a6357b7b6ba5b5668b85e1ef5f253dd6415cdf2d05 alanbaresj /home/a/Desktop/key/id_rsa hi.com wdc01 2
     
-    if len(sys.argv) != 8 or sys.argv[1] == "-h":
+    if len(args) != 10 or args[1] == "-h":
         print "usage: <sl_username> <sl_api_key> <sl_ssh_key> <sl_private_key_path> <custom_domain> <sl_datacenter> <numworkers>"
+        + "<vagrant-cluster_repo_location> <directory_where_vagrant_folders_saved>"
         sys.exit(0)
         
-#     print sys.argv[1]
+#     print args[1]
     
     
-    
-    
-    #set location of vagrant-cluster repo
-    #cleanrepo = "/home/a/Desktop/irinastuff/cleanrepo/vagrant-cluster"
-    cleanrepo = "/Users/irina/tmp/vagrant-cluster"
-    
-    
-    #set location of directory where all vagrant folders will be saved
-    #vagrantroot = "/home/a/Desktop/workspace/marketplace_stuff/vagrantdir"
-    vagrantroot = "/Users/irina/tmp/vagrantdir"
+    cleanrepo = args[8]
+    vagrantroot = args[9]
     
     randomnum = randint(0,sys.maxint) 
     curdir =vagrantroot + str(randomnum)
@@ -110,7 +108,7 @@ if __name__ == "__main__":
 # disk_capacity: 100
 # network_speed: 1000
 
-    print sys.argv
+    print args
 
 
     configname = "sl_config.yml"
@@ -122,17 +120,17 @@ if __name__ == "__main__":
     
     f = open(curdir + "/" + configname, 'wb')
     f.write("# SoftLayer API credentials\n")
-    f.write('sl_username: "' + sys.argv[1] + '"\n')
-    f.write('sl_api_key: "' + sys.argv[2] + '"\n')
-    f.write('sl_ssh_key: "' + sys.argv[3] + '"\n')
-    f.write('sl_private_key_path: "' + sys.argv[4] + '"\n')
+    f.write('sl_username: "' + args[1] + '"\n')
+    f.write('sl_api_key: "' + args[2] + '"\n')
+    f.write('sl_ssh_key: "' + args[3] + '"\n')
+    f.write('sl_private_key_path: "' + args[4] + '"\n')
     f.write("\n")
     f.write("# custom domain\n")
-    f.write('sl_domain: "' + sys.argv[5] + '"\n')
+    f.write('sl_domain: "' + args[5] + '"\n')
     f.write("\n")
     f.write("# datacenter where virtual servers should be provisioned\n")
     f.write("# datacenter = [ams01,dal01,dal05,dal06,hkg02,lon02,sea01,sjc01,sng01,wdc01]\n")
-    f.write('sl_datacenter: "' + sys.argv[6] + '"\n')
+    f.write('sl_datacenter: "' + args[6] + '"\n')
     f.write("\n")
     f.write("# virtual server parameters for BDAS cluster\n")    
     f.write("# cpus = [1,2,4,8,12,16]\n")  
@@ -145,22 +143,52 @@ if __name__ == "__main__":
     
     f.close()
     
-    numworkers = sys.argv[7]
+    numworkers = args[7]
     #NUM_WORKERS=3 vagrant up --provider=softlayer --no-provision && PROVIDER=softlayer vagrant provision
     #NUM_WORKERS=1 vagrant up --provider=softlayer --no-provision && PROVIDER=softlayer vagrant provision
     runcommand = "NUM_WORKERS=" + numworkers +" vagrant up --provider=softlayer --no-provision && PROVIDER=softlayer vagrant provision"
     
     os.chdir(curdir)
     print "current directory is: " + curdir
-    masterip = runProcess(runcommand)
-#     masterip = runProcess("kdslfj")
     
-    if masterip == None:
-        print "uh oh master ip == none"
-    else:
-        print "masterip: " + masterip
+
+    asyncRunProcess(runcommand,curdir)
+    
+#     if masterip == None:
+#         print "uh oh master ip == none"
+#     else:
+#         print "masterip: " + masterip
       
     #before beginning, make sure vagrant and ruby are installed and updated
     #need to respond with to keep track of: curdir, ip address of master (respond with ip address of master, so user can ssh in)
     
     
+def writeCurFolderToDatabase(curdir):
+    #stuff
+    a=1
+    
+def writeMasterIpToDatabase(masterip):
+    #stuff
+    a=1
+
+
+def handlepProcessAndWrite(runcommand,curdir):
+    masterip = runProcess(runcommand)
+    writeCurFolderToDatabase(curdir)
+    writeMasterIpToDatabase(masterip)
+
+def asyncRunProcess(runcommand,curdir):
+    
+    #execute following on a new thread
+    processArgs = (runcommand,curdir)
+    
+#     handlepProcessAndWrite(runcommand,curdir)
+    
+    t = threading.Thread(target=handlepProcessAndWrite,name='cucumber',args=processArgs)
+    t.daemon = False
+    t.start()
+
+
+if __name__ == "__main__":
+    doprovisioning(sys.argv)
+
