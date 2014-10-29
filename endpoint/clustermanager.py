@@ -1,6 +1,9 @@
 import logging
 from subprocess import Popen, PIPE, STDOUT
 
+from vagrantprovision.handle_provisioning import provision_cluster
+from vagrantprovision.sl_config import SLConfig
+
 logger = logging.getLogger("endpoint")
 
 def create_cluster(cluster_id):
@@ -12,6 +15,8 @@ def create_cluster(cluster_id):
     # TODO call vagrant up && vagrant provision
     # cmd = 'sl vs create -y --hourly --datacenter=dal06 --cpu=4 --memory=16384 --os=UBUNTU_LATEST --domain=bdasmarket.irina.com --hostname=controller --wait=86400 --key=irina@ru.ibm.com'
     # p = Popen(cmd, shell=True, bufsize=10000, stdin=PIPE, stdout=logfile, stderr=STDOUT)
+
+    provision_cluster()
 
 def destroy_cluster(cluster_id):
     logger.info('Destroying cluster id = {}'.format(cluster_id))

@@ -24,12 +24,10 @@ class CompanySubscription(db.Model):
 class User(db.Model):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    #email = db.Column(db.String(100), unique=True)
-    email = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
     first = db.Column(db.String(100))
     last = db.Column(db.String(100))
-    #openid = db.Column(db.String(100), unique=True)
-    openid = db.Column(db.String(100))
+    openid = db.Column(db.String(100), unique=True)
     clusters = db.relationship('Cluster', backref='owner', lazy='dynamic')
 
     @classmethod
@@ -56,13 +54,41 @@ class Event(db.Model):
 class Cluster(db.Model):
     __tablename__ = 'Cluster'
     uuid = db.Column(db.String(100), primary_key=True)
-    num_workers = db.Column(db.Integer)
     owner_id = db.Column(db.Integer, db.ForeignKey('User.id'))
 
-    def __init__(self, uuid, num_workers, owner_id):
+    num_workers = db.Column(db.Integer)
+    cpus = db.Column(db.Integer)
+    memory = db.Column(db.Integer)
+    disk_capacity = db.Column(db.Integer)
+    network_speed = db.Column(db.Integer)
+
+    sl_username = db.Column(db.String(100))
+    sl_api_key = db.Column(db.String(100))
+
+    # TODO we will provision user key and vagrant (master) key
+    sl_ssh_key = db.Column(db.String(100))
+
+    sl_domain = db.Column(db.String(100))
+    sl_datacenter = db.Column(db.String(100))
+
+    def __init__(self, uuid, owner_id, num_workers=5, cpus=4, memory=16384,
+                 sl_username='i.fedulova',
+                 sl_api_key='6941affacdc0c6bb60ac7dc2886b548462da32587ae4cdca7307ff6ea2b3a14c',
+                 sl_ssh_key='irina@ru.ibm.com',
+                 sl_domain='irina.com',
+                 sl_datacenter='dal06'):
         self.uuid = uuid
-        self.num_workers = num_workers
         self.owner_id = owner_id
+
+        self.num_workers = num_workers
+        self.cpus = cpus
+        self.memory = memory
+
+        self.sl_username = sl_username
+        self.sl_api_key = sl_api_key
+        self.sl_ssh_key = sl_ssh_key
+        self.sl_domain = sl_domain
+        self.sl_datacenter = sl_datacenter
 
     @classmethod
     def by_uuid(cls, uuid):

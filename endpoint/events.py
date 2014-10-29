@@ -59,7 +59,7 @@ def CreateOrder(event_xml):
     # TODO ask num_workers from user using interactive endpoint
     num_workers = 5
     owner_id = creator.by_openid(creator.openid)
-    cluster = Cluster(uuid=cluster_id, num_workers=num_workers, owner_id=owner_id)
+    cluster = Cluster(uuid=cluster_id, owner_id=owner_id, num_workers=num_workers)
     db.session.add(cluster)
 
     create_cluster(cluster_id)
