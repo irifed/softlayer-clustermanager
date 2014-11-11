@@ -106,12 +106,13 @@ def provision_cluster(cluster_id, sl_config):
 def get_cluster_status(cluster_id):
 
     cluster_home = vagrantroot + '.' + cluster_id
-    cluster_log_path = cluster_home + '/vagrant.out'
 
-    logfile = open(cluster_log_path, 'r')
+    stdout = open(cluster_home + '/vagrant.out', 'r')
+    stderr = open(cluster_home + '/vagrant.err', 'r')
 
     # TODO grep out master ip address
-    cluster_log = logfile.read()
+    cluster_log = stdout.read()
+    cluster_err = stderr.read()
 
     master_ip = None
     if 'master: SSH address:' in cluster_log:
@@ -119,7 +120,7 @@ def get_cluster_status(cluster_id):
             'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
             cluster_log).groups()[0]
 
-    return master_ip, cluster_log
+    return master_ip, cluster_log, cluster_err
 
 if __name__ == "__main__":
     provision_cluster()

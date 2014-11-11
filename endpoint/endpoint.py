@@ -125,7 +125,7 @@ def cluster_create():
 def cluster_status():
     cluster_id = request.args.get('cluster_id')
 
-    master_ip, log = get_cluster_status(cluster_id)
+    master_ip, stdout, stderr = get_cluster_status(cluster_id)
 
     # TODO prettify cluster log presentation
     return '<body>' \
@@ -134,4 +134,6 @@ def cluster_status():
            '<pre>ssh -i &lt;path to your private key&gt; root@{}</pre>' \
            '<h3>Cluster provisioning log (please refresh manually)</h3>' \
            '<pre>{}</pre>' \
-           '</body>'.format(master_ip, master_ip, log)
+           '<h3>Provisioning error log:</h3>' \
+           '<pre>{}</pre>' \
+           '</body>'.format(master_ip, master_ip, stdout, stderr)
