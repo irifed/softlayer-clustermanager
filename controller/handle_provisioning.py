@@ -25,6 +25,7 @@ def runProcess(command):
     myProc = Process(command)
     outf = open('vagrant.out', 'w')
     errf = open('vagrant.err', 'w')
+    masterip = None
     while True:
         # print any new output to files
         out, err = myProc.readboth()
