@@ -105,7 +105,7 @@ def cluster_create():
             sl_api_key=form.sl_api_key.data,
 
             # TODO refactor hack with irina's ssh key
-            sl_ssh_keys=['irina@ru.ibm.com', form.sl_ssh_key.data],
+            sl_ssh_keys=['irina@ru.ibm.com', str(form.sl_ssh_key.data)],
             sl_private_key_path='~/.ssh/sftlyr.pem',
 
             sl_domain=form.sl_domain.data,

@@ -53,7 +53,7 @@ class SLConfig:
         f.write('sl_api_key: "{}"\n'.format(self.sl_api_key))
 
         # TODO refactor hack with irina's ssh key
-        f.write('sl_ssh_keys: "{}"\n'.format(self.sl_ssh_keys))
+        f.write('sl_ssh_keys: {}\n'.format(self.sl_ssh_keys))
         f.write('sl_private_key_path: "{}"\n'.format(self.sl_private_key_path))
 
         f.write('\n')
