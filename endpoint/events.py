@@ -1,8 +1,9 @@
 import logging
-import uuid
 
-from models import db, Cluster
-from clustermanager import create_cluster, destroy_cluster
+from models.models import db
+from models.sl_config import SLConfig
+from controller.clustermanager import create_cluster, destroy_cluster
+
 
 logger = logging.getLogger("endpoint")
 
@@ -54,29 +55,33 @@ def CreateOrder(event_xml):
 
     creator = event_xml.creator.CreateUserModel(companySubscription)
     db.session.add(creator)
-
-    cluster_id = str(uuid.uuid4())
-    # TODO ask num_workers from user using interactive endpoint
-    num_workers = 5
-    owner_id = creator.by_openid(creator.openid)
-    cluster = Cluster(uuid=cluster_id, owner_id=owner_id, num_workers=num_workers)
-    db.session.add(cluster)
-
-    create_cluster(cluster_id)
-
     db.session.commit()
 
+    owner_id = creator.by_openid(creator.openid)
+
+    # TODO get num_workers and sl_config using interactive endpoint
+    sl_config = SLConfig(
+        sl_username='i.fedulova',
+        sl_api_key='6941affacdc0c6bb60ac7dc2886b548462da32587ae4cdca7307ff6ea2b3a14c',
+
+        # TODO refactor hack with irina's ssh key
+        sl_ssh_keys=['irina@ru.ibm.com', 'TODO user key'],
+        sl_private_key_path='~/.ssh/sftlyr.pem',
+
+        sl_domain='appdirect.irina.com',
+        sl_datacenter='dal06',
+        num_workers=5
+    )
+
+    cluster_id = create_cluster(owner_id, sl_config)
+
+    # return cluster_id, AppDirect will store it as accountIdentifier
     return xml_order_ok.format(cluster_id)
 
 def CancelOrder(event_xml):
     cluster_id = event_xml.payload.account.accountIdentifier
     logger.info('CancelOrder {}'.format(cluster_id))
 
-    cluster = Cluster.by_uuid(cluster_id)
-    logger.debug('removing cluster {} from table Cluster'.format(cluster_id))
     destroy_cluster(cluster_id)
-
-    db.session.delete(cluster)
-    db.session.commit()
 
     return xml_success.format(cluster_id)

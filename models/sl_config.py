@@ -1,11 +1,13 @@
 class SLConfig:
     def __init__(self, sl_username, sl_api_key,
-                 sl_ssh_key, sl_private_key_path,
+                 sl_ssh_keys, sl_private_key_path,
                  sl_domain, sl_datacenter,
-                 cpus=4, memory=16384, disk_capacity=100, network_speed=1000):
+                 cpus=4, memory=16384, disk_capacity=100,
+                 network_speed=1000, num_workers=5):
+
         self.sl_username = sl_username
         self.sl_api_key = sl_api_key
-        self.sl_ssh_key = sl_ssh_key
+        self.sl_ssh_keys = sl_ssh_keys
         self.sl_private_key_path = sl_private_key_path
         self.sl_domain = sl_domain
         self.sl_datacenter = sl_datacenter
@@ -13,6 +15,7 @@ class SLConfig:
         self.memory = memory
         self.disk_capacity = disk_capacity
         self.network_speed = network_speed
+        self.num_workers = num_workers
 
     def create_sl_config_file(self, filepath):
         """Populate sl_config.yml with provided parameters
@@ -20,7 +23,7 @@ class SLConfig:
          # SoftLayer API credentials
          sl_username: "EDIT HERE"
          sl_api_key: "EDIT HERE"
-         sl_ssh_key: "EDIT HERE"
+         sl_ssh_keys: "EDIT HERE"
          sl_private_key_path: "EDIT HERE"
 
          # custom domain
@@ -38,6 +41,8 @@ class SLConfig:
          disk_capacity: 100
          network_speed: 1000
 
+         num_workers: 5
+
         :param filepath: sl_config.yml full path
         :return:
         """
@@ -46,8 +51,11 @@ class SLConfig:
         f.write('# SoftLayer API credentials\n')
         f.write('sl_username: "{}"\n'.format(self.sl_username))
         f.write('sl_api_key: "{}"\n'.format(self.sl_api_key))
-        f.write('sl_ssh_key: "{}"\n'.format(self.sl_ssh_key))
+
+        # TODO refactor hack with irina's ssh key
+        f.write('sl_ssh_keys: "{}"\n'.format(self.sl_ssh_keys))
         f.write('sl_private_key_path: "{}"\n'.format(self.sl_private_key_path))
+
         f.write('\n')
         f.write('# custom domain\n')
         f.write('sl_domain: "{}"\n'.format(self.sl_domain))
@@ -64,6 +72,7 @@ class SLConfig:
         f.write('memory: {}\n'.format(self.memory))
         f.write('disk_capacity: {}\n'.format(self.disk_capacity))
         f.write('network_speed: {}\n'.format(self.network_speed))
+        f.write('num_workers: {}\n'.format(self.num_workers))
 
         f.close()
 

@@ -2,19 +2,23 @@
 
 import shutil
 import os
+import re
 import threading
 import logging
-import uuid
 from time import sleep
 
 from asyncproc import Process
-from sl_config import SLConfig
+from models.sl_config import SLConfig
 
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s')
 logger = logging.getLogger("handle_provisioning")
 
+
+## git clone --recursive https://github.com/irifed/vagrant-cluster.git cleanrepo
+cleanrepo = '/tmp/vagrant-cluster'
+vagrantroot = '/tmp/clusters/cluster'
 
 # stolen from http://stackoverflow.com/questions/4417546/constantly-print-subprocess-output-while-process-is-running
 def runProcess(command):
@@ -78,7 +82,7 @@ def asyncRunProcess(runcommand, curdir):
     t.start()
 
 
-def do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config, num_workers):
+def do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config):
     curdir = vagrantroot + '.' + cluster_id
     shutil.copytree(cleanrepo, curdir, symlinks=False, ignore=None)
     os.chdir(curdir)
@@ -87,32 +91,34 @@ def do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config, num_workers):
 
     runcommand = \
         "NUM_WORKERS={} vagrant up --provider=softlayer --no-provision && " \
-        "PROVIDER=softlayer vagrant provision".format(num_workers)
+        "PROVIDER=softlayer vagrant provision".format(sl_config.num_workers)
     logger.debug(runcommand)
 
     asyncRunProcess(runcommand, curdir)
 
 
-def provision_cluster():
-    cluster_id = str(uuid.uuid4())
+def provision_cluster(cluster_id, sl_config):
+    # TODO get rid of this function
+    do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config)
 
-    ## git clone https://github.com/irifed/vagrant-cluster.git cleanrepo
-    cleanrepo = '/tmp/vagrant-cluster'
-    vagrantroot = '/tmp/clusters/cluster'
 
-    sl_config = SLConfig(
-        sl_username='i.fedulova',
-        sl_api_key='6941affacdc0c6bb60ac7dc2886b548462da32587ae4cdca7307ff6ea2b3a14c',
-        sl_ssh_key='irina@ru.ibm.com',
-        sl_private_key_path='~/.ssh/sftlyr.pem',
-        sl_domain='appdirect.irina.com',
-        sl_datacenter='dal06'
-    )
+def get_cluster_status(cluster_id):
 
-    num_workers = 0
+    cluster_home = vagrantroot + '.' + cluster_id
+    cluster_log_path = cluster_home + '/vagrant.out'
 
-    do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config, num_workers)
+    logfile = open(cluster_log_path, 'r')
 
+    # TODO grep out master ip address
+    cluster_log = logfile.read()
+
+    master_ip = None
+    if 'master: SSH address:' in cluster_log:
+        master_ip = re.search(
+            'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
+            cluster_log).groups()[0]
+
+    return master_ip, cluster_log
 
 if __name__ == "__main__":
     provision_cluster()

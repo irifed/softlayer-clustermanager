@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-import logging
-
-from models import User
-from models import CompanySubscription
-
 from xml.dom.minidom import Document
+
+from models.models import User
+from models.models import CompanySubscription
 
 
 class EventXml(Document):
