@@ -135,7 +135,7 @@ def _cluster_status():
     # TODO prettify cluster log presentation
     return '<body>' \
            '<h3>master ip: {}</h3>' \
-           '<h3>master password: = {}' \
+           '<h3>master password: {}' \
            '<p>You can login to master node using command: </p>' \
            '<pre>ssh -i &lt;path to your private key&gt; root@{}</pre>' \
            '<h3>Cluster provisioning log (please refresh manually)</h3>' \

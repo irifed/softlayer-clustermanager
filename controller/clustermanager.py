@@ -70,7 +70,7 @@ def get_master_password(master_ip, cluster_id):
     vs_manager = SoftLayer.managers.VSManager(client)
     master_details = vs_manager.list_instances(public_ip=master_ip)
     master_instance = vs_manager.get_instance(instance_id=master_details[0]['id'])
-    master_password = master_instance['operatingSystem']['passwords']
+    master_password = master_instance['operatingSystem']['passwords'][0]['password']
     return master_password
 
 
