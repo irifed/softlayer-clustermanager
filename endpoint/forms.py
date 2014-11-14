@@ -1,16 +1,16 @@
 from flask_wtf import Form
-from wtforms import StringField, SelectField, FileField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SelectField, IntegerField
+from wtforms.validators import DataRequired, Optional
 
 
 class SLConfigForm(Form):
     sl_username = StringField('sl_username', validators=[DataRequired()])
     sl_api_key = StringField('sl_api_key', validators=[DataRequired()])
-    sl_ssh_key = StringField('sl_ssh_key', validators=[DataRequired()])
+    sl_ssh_key = StringField('sl_ssh_key', validators=[Optional()])
 
     sl_domain = StringField('sl_domain', validators=[DataRequired()])
 
-    num_workers = IntegerField('num_workers', validators=[DataRequired()])
+    num_workers = IntegerField('num_workers', validators=[DataRequired()], default=2)
 
     # TODO add all datacenters
     datacenters = [('dal06','dal06'), ('sjc01','sjc01'), ('ams01','ams01')]

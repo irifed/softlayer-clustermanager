@@ -16,7 +16,7 @@ from . import app
 
 from models.models import Cluster
 from models.sl_config import SLConfig
-from controller.clustermanager import create_cluster
+from controller.clustermanager import create_cluster, get_master_password
 from controller.handle_provisioning import get_cluster_status
 
 from marshall import EventXml
@@ -34,11 +34,11 @@ consumer_key = 'bdas-cluster-15877'
 consumer_secret = 'PMBysgKaJtWZrOiq'
 
 @app.route('/hello')
-def hello():
+def _hello():
     return 'Hello World'
 
 @app.route('/login', methods=['POST', 'GET'])
-def login():
+def _login():
     logging.debug('request.args={}'.format(request.args))
 
     openid = request.args.get('openid')
@@ -51,7 +51,7 @@ def login():
     return "openid = {}, cluster = {}".format(openid, cluster)
 
 @app.route('/event', methods=['POST', 'GET'])
-def event():
+def _event():
     logging.debug('request.args = {}'.format(request.args))
 
     # TODO guard by try..catch
@@ -83,8 +83,8 @@ def event():
 
     return Response(xml_response, mimetype='text/xml')
 
-@app.route('/cluster_create', methods=['POST', 'GET'])
-def cluster_create():
+@app.route('/create_cluster', methods=['POST', 'GET'])
+def _create_cluster_():
 
     form = SLConfigForm()
     if form.validate_on_submit():
@@ -100,13 +100,18 @@ def cluster_create():
             form.sl_disk_capacity.data, form.sl_network_speed.data
         ))
 
+        # TODO refactor hack with irina's ssh key
+        ssh_keys = ['irina@ru.ibm.com']
+        private_key_path = '~/.ssh/sftlyr.pem'
+        if len(str(form.sl_ssh_key.data)) > 0:
+            ssh_keys.append(form.sl_ssh_key.data)
+
         sl_config = SLConfig(
             sl_username=form.sl_username.data,
             sl_api_key=form.sl_api_key.data,
 
-            # TODO refactor hack with irina's ssh key
-            sl_ssh_keys=['irina@ru.ibm.com', str(form.sl_ssh_key.data)],
-            sl_private_key_path='~/.ssh/sftlyr.pem',
+            sl_ssh_keys=ssh_keys,
+            sl_private_key_path=private_key_path,
 
             sl_domain=form.sl_domain.data,
             sl_datacenter=form.sl_datacenter.data,
@@ -117,15 +122,15 @@ def cluster_create():
         cluster_id = create_cluster(owner_id, sl_config)
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
-        # return redirect('/hello')
 
     return render_template('form.html', title='Home page', form=form)
 
 @app.route('/cluster_status', methods=['POST', 'GET'])
-def cluster_status():
+def _cluster_status():
     cluster_id = request.args.get('cluster_id')
 
     master_ip, stdout, stderr = get_cluster_status(cluster_id)
+    master_password = get_master_password(master_ip)
 
     # TODO prettify cluster log presentation
     return '<body>' \

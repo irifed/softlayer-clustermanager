@@ -6,6 +6,7 @@ from controller.handle_provisioning import provision_cluster
 
 logger = logging.getLogger("endpoint")
 
+
 def create_cluster(owner_id, sl_config):
     cluster_id = str(uuid.uuid4())
 
@@ -28,6 +29,7 @@ def create_cluster(owner_id, sl_config):
 
     return cluster_id
 
+
 def destroy_cluster(cluster_id):
     logger.info('Destroying cluster id = {}'.format(cluster_id))
     logfile = open('create_cluster.log', 'a')
@@ -38,4 +40,8 @@ def destroy_cluster(cluster_id):
     db.session.delete(cluster)
     db.session.commit()
 
-    # TODO call vagrant destroy
+    # TODO call vagrant destroy for this cluster
+
+
+def get_master_password(master_ip, owner_id):
+    pass

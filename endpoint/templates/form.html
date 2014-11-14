@@ -5,7 +5,7 @@
   <form action='' method='post' name='create_cluster'>
 
       {{ form.hidden_tag() }}
-      <p>SoftLayer username: {{ form.sl_username(size=80) }}
+      <p>SoftLayer username: {{ form.sl_username(size=64) }}
           {% for error in form.sl_username.errors %}
             <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
@@ -13,11 +13,13 @@
           {% for error in form.sl_api_key.errors %}
             <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
-      <p>SoftLayer SSH key: {{ form.sl_ssh_key(size=80) }}
+      <p>SoftLayer SSH key label
+          (optional, should be provisioned on SoftLayer in advance):<br>
+          {{ form.sl_ssh_key(size=64) }}
           {% for error in form.sl_ssh_key.errors %}
             <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
-      <p>SoftLayer domain: {{ form.sl_domain(size=80) }}
+      <p>SoftLayer domain: {{ form.sl_domain(size=64) }}
           {% for error in form.sl_domain.errors %}
             <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
