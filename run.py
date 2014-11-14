@@ -5,10 +5,15 @@ from endpoint import app
 from models.models import db
 
 
-#logging.basicConfig(filename='example.log', level=logging.DEBUG)
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s')
-logger = logging.getLogger("endpoint")
+logging.basicConfig(
+    format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s',
+    level=logging.ERROR)
+
+logging.getLogger('SoftLayer').setLevel(logging.WARNING)
+
+logger = logging.getLogger('endpoint')
+logger.setLevel(level=logging.DEBUG)
+
 
 
 def connect_db(app):
