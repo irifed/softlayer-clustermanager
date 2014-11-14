@@ -19,8 +19,9 @@ logger = logging.getLogger("handle_provisioning")
 cleanrepo = '/tmp/vagrant-cluster'
 vagrantroot = '/tmp/clusters/cluster'
 
+
 # stolen from http://stackoverflow.com/questions/4417546/constantly-print-subprocess-output-while-process-is-running
-def runProcess(command):
+def run_process(command):
     myProc = Process(command)
     outf = open('vagrant.out', 'w')
     errf = open('vagrant.err', 'w')
@@ -43,6 +44,7 @@ def runProcess(command):
         if "master: SSH address:" in out:
             masterip = out.strip().split(" ")[3]
             print("MASTER IP IS: " + masterip)
+            write_master_ip_to_database(masterip)
 
             # print myProc.__exitstatus
 
@@ -54,29 +56,23 @@ def runProcess(command):
     return masterip
 
 
-def writeCurFolderToDatabase(curdir):
+def write_master_ip_to_database(masterip):
     #stuff
     a = 1
 
 
-def writeMasterIpToDatabase(masterip):
-    #stuff
-    a = 1
+def handle_process_and_write(runcommand, curdir):
+    masterip = run_process(runcommand)
+    write_master_ip_to_database(masterip)
 
 
-def handlepProcessAndWrite(runcommand, curdir):
-    writeCurFolderToDatabase(curdir)
-    masterip = runProcess(runcommand)
-    writeMasterIpToDatabase(masterip)
-
-
-def asyncRunProcess(runcommand, curdir):
+def async_run_process(runcommand, curdir):
     """execute following on a new thread
     handlepProcessAndWrite(runcommand, curdir)
     """
 
     processArgs = (runcommand, curdir)
-    t = threading.Thread(target=handlepProcessAndWrite, name='cucumber',
+    t = threading.Thread(target=handle_process_and_write, name='cucumber',
                          args=processArgs)
     t.daemon = False
     t.start()
@@ -94,7 +90,7 @@ def do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config):
         "PROVIDER=softlayer vagrant provision".format(sl_config.num_workers)
     logger.debug(runcommand)
 
-    asyncRunProcess(runcommand, curdir)
+    async_run_process(runcommand, curdir)
 
 
 def provision_cluster(cluster_id, sl_config):
@@ -119,7 +115,3 @@ def get_cluster_status(cluster_id):
             cluster_log).groups()[0]
 
     return master_ip, cluster_log, cluster_err
-
-
-if __name__ == "__main__":
-    pass
