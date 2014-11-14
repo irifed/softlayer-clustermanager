@@ -1,7 +1,6 @@
 import logging
 import uuid
 
-import SoftLayer
 
 from models.models import db, Cluster
 from .handle_provisioning import provision_cluster
@@ -61,16 +60,6 @@ def destroy_cluster(cluster_id):
 
 
 def get_master_password(master_ip, cluster_id):
-    # retrieve sl username and api key by cluster_id
     cluster = Cluster.by_uuid(cluster_id)
-
-    client = SoftLayer.Client(username=cluster.sl_username,
-                              api_key=cluster.sl_api_key)
-
-    vs_manager = SoftLayer.managers.VSManager(client)
-    master_details = vs_manager.list_instances(public_ip=master_ip)
-    master_instance = vs_manager.get_instance(instance_id=master_details[0]['id'])
-    master_password = master_instance['operatingSystem']['passwords'][0]['password']
-    return master_password
-
+    return cluster.master_password
 

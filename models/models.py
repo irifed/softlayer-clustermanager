@@ -70,6 +70,9 @@ class Cluster(db.Model):
     sl_domain = db.Column(db.String(100))
     sl_datacenter = db.Column(db.String(100))
 
+    master_ip = db.Column(db.String(20))
+    master_password = db.Column(db.String(20))
+
     def __init__(self, uuid, owner_id, num_workers=5, cpus=4, memory=16384,
                  disk_capacity=100,
                  network_speed=1000,
@@ -77,7 +80,9 @@ class Cluster(db.Model):
                  sl_api_key='6941affacdc0c6bb60ac7dc2886b548462da32587ae4cdca7307ff6ea2b3a14c',
                  sl_ssh_key='irina@ru.ibm.com',
                  sl_domain='irina.com',
-                 sl_datacenter='dal06'):
+                 sl_datacenter='dal06',
+                 master_ip='0.0.0.0',
+                 master_password=''):
         self.uuid = uuid
         self.owner_id = owner_id
 
@@ -93,6 +98,9 @@ class Cluster(db.Model):
         self.sl_ssh_key = sl_ssh_key
         self.sl_domain = sl_domain
         self.sl_datacenter = sl_datacenter
+
+        self.master_ip = master_ip
+        self.master_password = master_password
 
     @classmethod
     def by_uuid(cls, uuid):
