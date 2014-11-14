@@ -19,8 +19,8 @@ from models.sl_config import SLConfig
 from controller.clustermanager import create_cluster, get_master_password
 from controller.handle_provisioning import get_cluster_status
 
-from marshall import EventXml
-from events import HandleEvent
+from .marshall import EventXml
+from .events import HandleEvent
 
 from .forms import SLConfigForm
 
@@ -130,15 +130,16 @@ def _cluster_status():
     cluster_id = request.args.get('cluster_id')
 
     master_ip, stdout, stderr = get_cluster_status(cluster_id)
-    master_password = get_master_password(master_ip)
+    master_password = get_master_password(master_ip, cluster_id)
 
     # TODO prettify cluster log presentation
     return '<body>' \
            '<h3>master ip: {}</h3>' \
+           '<h3>master password: = {}' \
            '<p>You can login to master node using command: </p>' \
            '<pre>ssh -i &lt;path to your private key&gt; root@{}</pre>' \
            '<h3>Cluster provisioning log (please refresh manually)</h3>' \
            '<pre>{}</pre>' \
            '<h3>Provisioning error log:</h3>' \
            '<pre>{}</pre>' \
-           '</body>'.format(master_ip, master_ip, stdout, stderr)
+           '</body>'.format(master_ip, master_password, master_ip, stdout, stderr)

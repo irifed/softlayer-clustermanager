@@ -65,13 +65,14 @@ class Cluster(db.Model):
     sl_username = db.Column(db.String(100))
     sl_api_key = db.Column(db.String(100))
 
-    # TODO we will provision user key and vagrant (master) key
     sl_ssh_key = db.Column(db.String(100))
 
     sl_domain = db.Column(db.String(100))
     sl_datacenter = db.Column(db.String(100))
 
     def __init__(self, uuid, owner_id, num_workers=5, cpus=4, memory=16384,
+                 disk_capacity=100,
+                 network_speed=1000,
                  sl_username='i.fedulova',
                  sl_api_key='6941affacdc0c6bb60ac7dc2886b548462da32587ae4cdca7307ff6ea2b3a14c',
                  sl_ssh_key='irina@ru.ibm.com',
@@ -83,6 +84,9 @@ class Cluster(db.Model):
         self.num_workers = num_workers
         self.cpus = cpus
         self.memory = memory
+
+        self.disk_capacity = disk_capacity
+        self.network_speed = network_speed
 
         self.sl_username = sl_username
         self.sl_api_key = sl_api_key

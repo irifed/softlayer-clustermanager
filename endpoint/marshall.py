@@ -14,10 +14,11 @@ class EventXml(Document):
     prettyPrint = ""
 
     def __init__(self, xmlDocument):
+        super().__init__()
         self.eventXml = xmlDocument
-        self.eventType = self.eventXml.getElementsByTagName('type')[0]\
+        self.eventType = self.eventXml.getElementsByTagName('type')[0] \
             .childNodes[0].data
-        self.creator = UserXml(self.eventXml, field = "creator")
+        self.creator = UserXml(self.eventXml, field="creator")
         self.payload = PayloadXml(self.eventXml)
         self.prettyPrint = xmlDocument.toprettyxml()
 
@@ -32,20 +33,20 @@ class UserXml(Document):
     firstName = None
     lastName = None
 
-    def __init__(self, xmlDocument, field = "user"):
+    def __init__(self, xmlDocument, field="user"):
+        super().__init__()
         elements = xmlDocument.getElementsByTagName(field)
         if len(elements) == 0:
             return
         self.userXml = elements[0]
-        self.openid = self.userXml.getElementsByTagName("openId")[0]\
+        self.openid = self.userXml.getElementsByTagName("openId")[0] \
             .childNodes[0].data
         self.openid = self.openid.split('/')[-1]
-
-        self.email = self.userXml.getElementsByTagName("email")[0]\
+        self.email = self.userXml.getElementsByTagName("email")[0] \
             .childNodes[0].data
-        self.firstName = self.userXml.getElementsByTagName("firstName")[0]\
+        self.firstName = self.userXml.getElementsByTagName("firstName")[0] \
             .childNodes[0].data
-        self.lastName = self.userXml.getElementsByTagName("lastName")[0]\
+        self.lastName = self.userXml.getElementsByTagName("lastName")[0] \
             .childNodes[0].data
 
     def __str__(self):
@@ -65,12 +66,14 @@ class UserXml(Document):
 class OrderXml(Document):
     orderXml = None
     edition = None
+
     def __init__(self, xmlDocument):
+        super().__init__()
         elements = xmlDocument.getElementsByTagName('order')
         if len(elements) == 0:
             return
         self.orderXml = elements[0]
-        self.edition = self.orderXml.getElementsByTagName("editionCode")[0]\
+        self.edition = self.orderXml.getElementsByTagName("editionCode")[0] \
             .childNodes[0].data
 
     def __str__(self):
@@ -85,6 +88,7 @@ class PayloadXml(Document):
     company = None
 
     def __init__(self, xmlDocument):
+        super().__init__()
         elements = xmlDocument.getElementsByTagName('payload')
         if len(elements) == 0:
             return
@@ -108,12 +112,15 @@ class CompanyXml(Document):
     website = None
 
     def __init__(self, xmlDocument):
+        super().__init__()
         elements = xmlDocument.getElementsByTagName('company')
         if len(elements) == 0:
             return
         self.companyXml = elements[0]
-        self.name = self.companyXml.getElementsByTagName('name')[0].childNodes[0].data
-        self.website = self.companyXml.getElementsByTagName('website')[0].childNodes[0].data
+        self.name = self.companyXml.getElementsByTagName('name')[0].childNodes[
+            0].data
+        self.website = \
+        self.companyXml.getElementsByTagName('website')[0].childNodes[0].data
 
     def __str__(self):
         return self.name
@@ -124,11 +131,12 @@ class AccountXml(Document):
     accountIdentifier = None
 
     def __init__(self, xmlDocument):
+        super().__init__()
         elements = xmlDocument.getElementsByTagName('account')
         if len(elements) == 0:
             return
         self.accountXml = elements[0]
-        self.accountIdentifier = self.accountXml\
+        self.accountIdentifier = self.accountXml \
             .getElementsByTagName('accountIdentifier')[0].childNodes[0].data
 
     def __str__(self):

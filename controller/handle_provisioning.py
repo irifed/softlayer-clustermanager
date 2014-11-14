@@ -7,8 +7,7 @@ import threading
 import logging
 from time import sleep
 
-from asyncproc import Process
-from models.sl_config import SLConfig
+from .asyncproc import Process
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -16,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger("handle_provisioning")
 
 
-## git clone --recursive https://github.com/irifed/vagrant-cluster.git cleanrepo
+# # git clone --recursive https://github.com/irifed/vagrant-cluster.git cleanrepo
 cleanrepo = '/tmp/vagrant-cluster'
 vagrantroot = '/tmp/clusters/cluster'
 
@@ -38,12 +37,12 @@ def runProcess(command):
 
         # check to see if process has ended
         poll = myProc.wait(os.WNOHANG)
-        if poll != None and out == '':
+        if poll is not None and out == '':
             break
 
         if "master: SSH address:" in out:
             masterip = out.strip().split(" ")[3]
-            print "MASTER IP IS: " + masterip
+            print("MASTER IP IS: " + masterip)
 
             # print myProc.__exitstatus
 
@@ -104,7 +103,6 @@ def provision_cluster(cluster_id, sl_config):
 
 
 def get_cluster_status(cluster_id):
-
     cluster_home = vagrantroot + '.' + cluster_id
 
     stdout = open(cluster_home + '/vagrant.out', 'r')
@@ -122,5 +120,6 @@ def get_cluster_status(cluster_id):
 
     return master_ip, cluster_log, cluster_err
 
+
 if __name__ == "__main__":
-    provision_cluster()
+    pass
