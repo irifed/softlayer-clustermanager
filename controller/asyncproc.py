@@ -280,7 +280,8 @@ class Process(object):
         """Read data written by the process to its standard output.
         """
         self.__lock.acquire()
-        outdata = "".join(self.__collected_outdata)
+        outdata = b''.join(self.__collected_outdata)
+        outdata = outdata.decode(encoding='UTF-8')
         del self.__collected_outdata[:]
         self.__lock.release()
         return outdata
@@ -289,7 +290,8 @@ class Process(object):
         """Read data written by the process to its standard error.
         """
         self.__lock.acquire()
-        errdata = "".join(self.__collected_errdata)
+        errdata = b''.join(self.__collected_errdata)
+        errdata = errdata.decode(encoding='UTF-8')
         del self.__collected_errdata[:]
         self.__lock.release()
         return errdata
@@ -302,9 +304,11 @@ class Process(object):
            future versions!
         """
         self.__lock.acquire()
-        outdata = "".join(self.__collected_outdata)
+        outdata = b''.join(self.__collected_outdata)
+        outdata = outdata.decode(encoding='UTF-8')
         del self.__collected_outdata[:]
-        errdata = "".join(self.__collected_errdata)
+        errdata = b''.join(self.__collected_errdata)
+        errdata = errdata.decode(encoding='UTF-8')
         del self.__collected_errdata[:]
         self.__lock.release()
         return outdata, errdata
