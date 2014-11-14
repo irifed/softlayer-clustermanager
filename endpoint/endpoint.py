@@ -125,6 +125,25 @@ def _create_cluster_():
 
     return render_template('form.html', title='Home page', form=form)
 
+# @app.route('/cluster_status', methods=['POST', 'GET'])
+# def _cluster_status():
+#     cluster_id = request.args.get('cluster_id')
+
+#     master_ip, stdout, stderr = get_cluster_status(cluster_id)
+#     master_password = get_master_password(master_ip, cluster_id)
+
+#     # TODO prettify cluster log presentation
+#     return '<body>' \
+#            '<h3>master ip: {}</h3>' \
+#            '<h3>master password: = {}' \
+#            '<p>You can login to master node using command: </p>' \
+#            '<pre>ssh -i &lt;path to your private key&gt; root@{}</pre>' \
+#            '<h3>Cluster provisioning log (please refresh manually)</h3>' \
+#            '<pre>{}</pre>' \
+#            '<h3>Provisioning error log:</h3>' \
+#            '<pre>{}</pre>' \
+#            '</body>'.format(master_ip, master_password, master_ip, stdout, stderr)
+
 @app.route('/cluster_status', methods=['POST', 'GET'])
 def _cluster_status():
     cluster_id = request.args.get('cluster_id')
@@ -133,13 +152,4 @@ def _cluster_status():
     master_password = get_master_password(master_ip, cluster_id)
 
     # TODO prettify cluster log presentation
-    return '<body>' \
-           '<h3>master ip: {}</h3>' \
-           '<h3>master password: = {}' \
-           '<p>You can login to master node using command: </p>' \
-           '<pre>ssh -i &lt;path to your private key&gt; root@{}</pre>' \
-           '<h3>Cluster provisioning log (please refresh manually)</h3>' \
-           '<pre>{}</pre>' \
-           '<h3>Provisioning error log:</h3>' \
-           '<pre>{}</pre>' \
-           '</body>'.format(master_ip, master_password, master_ip, stdout, stderr)
+    return render_template('cluster_status.html', master_ip=master_ip, master_password=master_password, stdout=stdout, stderr=stderr)
