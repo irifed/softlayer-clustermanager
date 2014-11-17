@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8" >
+    <meta http-equiv="refresh" content="2">
+</head>
+<body>
+  <h3>master ip: {{ master_ip }}</h3>
+  <h3>master password: = {{ master_password }}</h3>
+  <p>You can login to master node using command: </p>
+  <pre>ssh -i &lt;path to your private key&gt; root@ {{ master_ip }}</pre>
+  <h3>Cluster provisioning log</h3>
+  <pre>{{ stout }}</pre>
+  <h3>Provisioning error log:</h3>
+  <pre>{{ stderr }}</pre>
+</body>
+</html>
