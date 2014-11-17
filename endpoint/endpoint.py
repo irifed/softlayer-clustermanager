@@ -12,7 +12,7 @@ from xml.dom import minidom
 import oauth2
 from flask import request, Response, render_template, redirect
 
-from . import app
+from endpoint import app
 
 from models.models import Cluster
 from models.sl_config import SLConfig
@@ -130,7 +130,7 @@ def _cluster_status():
     cluster_id = request.args.get('cluster_id')
 
     master_ip, stdout, stderr = get_cluster_status(cluster_id)
-    master_password = get_master_password(master_ip, cluster_id)
+    master_password = get_master_password(cluster_id)
 
     # TODO prettify cluster log presentation
     return '<body>' \

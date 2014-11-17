@@ -9,9 +9,12 @@ from time import sleep
 
 import SoftLayer
 
+from endpoint import app
+
 from .asyncproc import Process
 from models.models import db, Cluster
 
+import pprint
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s')
@@ -22,6 +25,12 @@ logger = logging.getLogger("handle_provisioning")
 cleanrepo = '/tmp/vagrant-cluster'
 vagrantroot = '/tmp/clusters/cluster'
 
+
+def extract_master_ip(output):
+    master_ip = re.search(
+            'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
+            output).groups()[0]
+    return master_ip
 
 # stolen from http://stackoverflow.com/questions/4417546/constantly-print-subprocess-output-while-process-is-running
 def run_process(command, cluster_id):
@@ -49,7 +58,7 @@ def run_process(command, cluster_id):
             break
 
         if 'master: SSH address:' in str(out):
-            masterip = out.strip().split(' ')[3]
+            masterip = extract_master_ip(out)
             print('MASTER IP IS: ' + masterip)
             store_master_ip_and_password(masterip, cluster_id)
 
@@ -62,8 +71,7 @@ def run_process(command, cluster_id):
 
 
 def handle_process_and_write(runcommand, cluster_id):
-    master_ip = run_process(runcommand, cluster_id)
-    store_master_ip_and_password(master_ip, cluster_id)
+    run_process(runcommand, cluster_id)
 
 
 def async_run_process(runcommand, cluster_id):
@@ -110,34 +118,46 @@ def get_cluster_status(cluster_id):
 
     master_ip = None
     if 'master: SSH address:' in cluster_log:
-        master_ip = re.search(
-            'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
-            cluster_log).groups()[0]
+        master_ip = extract_master_ip(cluster_log)
 
     return master_ip, cluster_log, cluster_err
 
 
 def get_master_password_from_sl(master_ip, cluster_id):
-    # retrieve sl username and api key by cluster_id
-    cluster = Cluster.by_uuid(cluster_id)
+    # This function executes one time from Thread and does not have db context
 
-    client = SoftLayer.Client(username=cluster.sl_username,
-                              api_key=cluster.sl_api_key)
+    if master_ip is None:
+        return ''
 
-    vs_manager = SoftLayer.managers.VSManager(client)
+    with app.test_request_context():
+        # retrieve sl username and api key by cluster_id
+        cluster = Cluster.by_uuid(cluster_id)
 
-    # WARNING: this is a very long call for some reason
-    # TODO fix this
-    master_details = vs_manager.list_instances(public_ip=master_ip)
+        logger.debug('cluster_id={}, sl_username={}, master_ip={}'.format(cluster_id, cluster.sl_username, master_ip))
 
-    master_instance = vs_manager.get_instance(instance_id=master_details[0]['id'])
-    master_password = master_instance['operatingSystem']['passwords'][0]['password']
+        client = SoftLayer.Client(username=cluster.sl_username,
+                                  api_key=cluster.sl_api_key)
 
-    # store password in db for faster retrieval in the future
-    cluster.master_password = master_password
-    db.session.commit()
+        vs_manager = SoftLayer.managers.VSManager(client)
 
-    return master_password
+        try:
+            master_details = vs_manager.list_instances(public_ip=master_ip)
+            if len(master_details) > 1:
+                logger.error(
+                    'SoftLayer API returned non-unique instance for ip = {}'.format(master_ip))
+
+            master_id = master_details[0]['id']
+            master_instance = vs_manager.get_instance(instance_id=master_id)
+            master_password = master_instance['operatingSystem']['passwords'][0]['password']
+            # store password in db for faster retrieval in the future
+            cluster.master_password = master_password
+            db.session.commit()
+
+        except Exception:
+            master_password = ''
+
+
+        return master_password
 
 
 def store_master_ip_and_password(master_ip, cluster_id):

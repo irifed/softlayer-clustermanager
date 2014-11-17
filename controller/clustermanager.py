@@ -59,7 +59,9 @@ def destroy_cluster(cluster_id):
     # TODO call vagrant destroy for this cluster
 
 
-def get_master_password(master_ip, cluster_id):
+def get_master_password(cluster_id):
     cluster = Cluster.by_uuid(cluster_id)
-    return cluster.master_password
+    if cluster is not None:
+        return cluster.master_password
+    return ''
 

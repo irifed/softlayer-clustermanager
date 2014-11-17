@@ -4,7 +4,6 @@ import logging
 from endpoint import app
 from models.models import db
 
-
 logging.basicConfig(
     format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s',
     level=logging.ERROR)
@@ -16,17 +15,16 @@ logger.setLevel(level=logging.DEBUG)
 
 
 
-def connect_db(app):
+def connect_db():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
     db.init_app(app)
     with app.app_context():
         # db.drop_all() # DEBUG uncomment to reset tables for debugging
         db.create_all()
-    return app
 
 
 if __name__ == "__main__":
-    app = connect_db(app)
+    connect_db()
 
     app.debug = True
     app.run('0.0.0.0')

@@ -6,11 +6,12 @@
   Company: Companies will have subscriptions to applications
   Event: Events represent state changes in subscriptions or user assignments
 """
+
 import logging
-import pprint
+logger = logging.getLogger("endpoint")
+
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
-logger = logging.getLogger("endpoint")
 
 
 class CompanySubscription(db.Model):
