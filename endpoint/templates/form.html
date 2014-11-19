@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+
+
 {% block content %}
-        <h1>Creating a cluster on SoftLayer</h1>
-  <h2>SoftLayer Configuration</h2>
+        <h2>Creating a cluster on SoftLayer</h2>
+  <h3>SoftLayer User Configuration</h3>
   <form action='' method='post' name='create_cluster'>
 
       {{ form.hidden_tag() }}
@@ -19,21 +21,20 @@
           {% for error in form.sl_ssh_key.errors %}
             <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
+
+    <h3>Cluster configuration</h3>
       <p>SoftLayer domain: {{ form.sl_domain(size=64) }}
           {% for error in form.sl_domain.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+          <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
       <p>SoftLayer datacenter: {{ form.sl_datacenter }}
           <br></p>
-
-
-    <h2>Cluster configuration</h2>
       <p>Number of worker nodes: {{ form.num_workers }}
           {% for error in form.sl_domain.errors %}
             <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br></p>
 
-      <h2>Cluster instances parameters</h2>
+      <h3>Cluster node parameters</h3>
       <p>Number of cpus: {{ form.sl_cpus }}
           <br></p>
       <p>Memory size: {{ form.sl_memory }}
@@ -44,6 +45,8 @@
           <br></p>
 
       <br>
-      <p><input type='submit' value='Create cluster'></p>
+      <!--<p><input type='submit' value='Create cluster'></p>-->
+      <button class="btn btn-lg btn-success" type="submit">Create cluster</button>
+
   </form>
 {% endblock %}
