@@ -80,7 +80,7 @@ def _event():
     return Response(xml_response, mimetype='text/xml')
 
 @app.route('/create_cluster', methods=['POST', 'GET'])
-def _create_cluster_():
+def _create_cluster():
 
     form = SLConfigForm()
     if form.validate_on_submit():
