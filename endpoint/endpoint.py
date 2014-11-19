@@ -33,10 +33,6 @@ event_url_template = 'https://www.appdirect.com/api/integration/v1/events/{}'
 consumer_key = 'bdas-cluster-15877'
 consumer_secret = 'PMBysgKaJtWZrOiq'
 
-@app.route('/hello')
-def _hello():
-    return 'Hello World'
-
 @app.route('/login', methods=['POST', 'GET'])
 def _login():
     logging.debug('request.args={}'.format(request.args))
