@@ -121,6 +121,24 @@ def _create_cluster():
 
     return render_template('form.html', title='Home page', form=form)
 
+
+@app.route('/master_ip', methods=['POST', 'GET'])
+def _master_ip():
+    cluster_id = request.args.get('cluster_id')
+
+    master_ip, stdout, stderr = get_cluster_status(cluster_id)
+
+    return master_ip
+
+
+@app.route('/master_password', methods=['POST', 'GET'])
+def _master_password():
+    cluster_id = request.args.get('cluster_id')
+
+    master_password = get_master_password(cluster_id)
+
+    return master_password
+
 @app.route('/cluster_status', methods=['POST', 'GET'])
 def _cluster_status():
     cluster_id = request.args.get('cluster_id')
@@ -129,4 +147,27 @@ def _cluster_status():
     master_password = get_master_password(cluster_id)
 
     # TODO prettify cluster log presentation
-    return render_template('cluster_status.html', master_ip=master_ip, master_password=master_password, stdout=stdout, stderr=stderr)
+    return render_template('cluster_status.html',
+                           cluster_id=cluster_id,
+                           master_ip=master_ip,
+                           master_password=master_password,
+                           stdout=stdout,
+                           stderr=stderr)
+
+
+@app.route('/cluster_stdout', methods=['POST', 'GET'])
+def _cluster_stdout():
+    cluster_id = request.args.get('cluster_id')
+
+    master_ip, stdout, stderr = get_cluster_status(cluster_id)
+    return stdout
+
+
+@app.route('/cluster_stderr', methods=['POST', 'GET'])
+def _cluster_stderr():
+    cluster_id = request.args.get('cluster_id')
+
+    master_ip, stdout, stderr = get_cluster_status(cluster_id)
+    return stderr
+
+

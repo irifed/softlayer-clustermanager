@@ -116,7 +116,7 @@ def get_cluster_status(cluster_id):
     cluster_log = stdout.read()
     cluster_err = stderr.read()
 
-    master_ip = None
+    master_ip = ''
     if 'master: SSH address:' in cluster_log:
         master_ip = extract_master_ip(cluster_log)
 
@@ -126,7 +126,7 @@ def get_cluster_status(cluster_id):
 def get_master_password_from_sl(master_ip, cluster_id):
     # This function executes one time from Thread and does not have db context
 
-    if master_ip is None:
+    if master_ip == '':
         return ''
 
     with app.test_request_context():
