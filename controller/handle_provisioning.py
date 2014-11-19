@@ -165,7 +165,8 @@ def store_master_ip_and_password(master_ip, cluster_id):
 
     master_password = get_master_password_from_sl(master_ip, cluster_id)
 
-    cluster = Cluster.by_uuid(cluster_id)
-    cluster.master_ip = master_ip
-    cluster.master_password = master_password
-    db.session.commit()
+    with app.test_request_context():
+        cluster = Cluster.by_uuid(cluster_id)
+        cluster.master_ip = master_ip
+        cluster.master_password = master_password
+        db.session.commit()
