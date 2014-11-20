@@ -92,7 +92,7 @@ def login():
             session['useremail'] = useremail
             session['apikey'] = apiKey
 
-            return _create_cluster()
+            return _dashboard()
 
         elif request.method =="POST":
             # The user did not specify all the required login information.
@@ -169,8 +169,34 @@ def _event():
 
     return Response(xml_response, mimetype='text/xml')
 
+@app.route('/dashboard', methods=['POST', 'GET'])
+def _dashboard():
+    if not logged_in():
+        return redirect('/')
+
+    return render_template('dashboard.html', title='Dashboard', username=session["username"])
+
+@app.route('/about', methods=['POST', 'GET'])
+def _about():
+
+    if not logged_in():
+        return redirect('/')
+
+    return render_template('about.html', title='About', username=session["username"])
+
+@app.route('/help', methods=['POST', 'GET'])
+def _help():
+
+    if not logged_in():
+        return redirect('/')
+
+    return render_template('help.html', title='Help', username=session["username"])
+
 @app.route('/create_cluster', methods=['POST', 'GET'])
 def _create_cluster():
+
+    if not logged_in():
+        return redirect('/')
 
     form = SLConfigForm()
     if form.validate_on_submit():
@@ -209,7 +235,7 @@ def _create_cluster():
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
 
-    return render_template('form.html', title='Home page', form=form,username=session["username"])
+    return render_template('form.html', title='Create Cluster', form=form,username=session["username"])
 
 
 @app.route('/master_ip', methods=['POST', 'GET'])
@@ -261,3 +287,7 @@ def _cluster_stderr():
     return stderr
 
 
+def logged_in():
+    if 'username' in session and 'apiKey' in session:
+        return True
+    return False

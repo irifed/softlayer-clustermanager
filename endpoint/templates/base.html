@@ -26,7 +26,7 @@
    <ul class="nav navbar-nav navbar-right">
 
                 <li><a href="#">Manage</a></li>
-                <li><a href="help">Help</a></li>
+                <li><a href="{{ url_for('_help') }}">Help</a></li>
 
                 <li class="dropdown">
                     <a class="dropdown-toggle userid" data-toggle="dropdown" href="#"> {{username}} <i class="fa fa-caret-down"></i>
@@ -51,10 +51,11 @@
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                  {% if username %}
+                <li><a href="{{ url_for('_dashboard') }}">Dashboard</a></li>
                 <li><a href="{{ url_for('_create_cluster') }}">Create</a></li>
-                <li><a href="#">Dashboard</a></li>
+
                  {% endif %} 
-                <li><a href="#">About</a></li>
+                <li><a href="{{ url_for('_about') }}">About</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
