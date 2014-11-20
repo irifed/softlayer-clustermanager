@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="col-lg-4 col-lg-offset-3 col-md-5 col-md-offset-3">
+    <div class="panel panel-default">
+      <div class="panel-heading text-center">
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-lg-12">
+
+            <form action="uilogin" method="POST" role="form" id="loginForm">
+              <div class="form-group">
+
+                <label> <h3>SoftLayer Account Login</h3> </label><br>
+                <label> Username </label>
+                <input type="text" name="username" form="loginForm" class="form-control">
+                <br>
+                <label> API Key </label>
+                <input type="text" name="apikey" form="loginForm" class="form-control">
+                <label><a href="#" id="apikeyHelp"> What's an API Key?</a></label>
+
+              <button class="btn btn-default pull-right" type="submit">Login</button>
+            </form> <!-- form -->
+
+          </div>
+        </div>
+      </div> <!-- panel body -->
+    </div> <!-- panel -->
+  </div>
+
+{% endblock %}
+
+{% block scripts%}
+  <script type="text/javascript">
+  $(document).ready(function() {
+
+      $('#apikeyHelp').on( 'click', function() {
+          alert("You can obtain your API key from the Softlayer Portal.");
+      } );
+
+  } );
+  </script>
+
+{% endblock %}
