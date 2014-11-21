@@ -288,6 +288,6 @@ def _cluster_stderr():
 
 
 def logged_in():
-    if 'username' in session and 'apiKey' in session:
+    if 'username' in session and 'apikey' in session:
         return True
     return False
