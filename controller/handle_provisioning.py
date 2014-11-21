@@ -22,8 +22,8 @@ logger = logging.getLogger("handle_provisioning")
 
 
 # # git clone --recursive https://github.com/irifed/vagrant-cluster.git cleanrepo
-cleanrepo = '/var/slcluster/vagrant-cluster'
-vagrantroot = '/var/slcluster/clusters/cluster'
+cleanrepo = '/opt/vagrant-cluster'
+vagrantroot = '/var/clusters/cluster'
 
 
 def extract_master_ip(output):
