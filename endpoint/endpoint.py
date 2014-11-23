@@ -229,11 +229,14 @@ def _create_cluster():
             sl_datacenter=form.sl_datacenter.data,
             num_workers=form.num_workers.data
         )
-        owner_id = form.sl_username.data
+        owner_id = session["username"]
 
         cluster_id = create_cluster(owner_id, sl_config)
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
+
+    # else:
+        # flash("hi")
 
     return render_template('form.html', title='Create Cluster', form=form,username=session["username"])
 

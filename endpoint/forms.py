@@ -4,8 +4,8 @@ from wtforms.validators import DataRequired, Optional
 
 
 class SLConfigForm(Form):
-    sl_username = StringField('sl_username', validators=[DataRequired()])
-    sl_api_key = StringField('sl_api_key', validators=[DataRequired()])
+    # sl_username = StringField('sl_username', validators=[DataRequired()])
+    # sl_api_key = StringField('sl_api_key', validators=[DataRequired()])
     sl_ssh_key = StringField('sl_ssh_key', validators=[Optional()])
 
     sl_domain = StringField('sl_domain', validators=[DataRequired()])
