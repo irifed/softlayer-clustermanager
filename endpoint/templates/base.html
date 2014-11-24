@@ -46,7 +46,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
+            {% if username %}
+            <a class="navbar-brand" href="{{ url_for('_dashboard') }}">SoftLayer Cluster Manager</a>
+            {% else %} 
             <a class="navbar-brand" href="#">SoftLayer Cluster Manager</a>
+            {% endif %} 
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">

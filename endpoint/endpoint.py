@@ -17,7 +17,7 @@ import sys
 
 from models.models import Cluster
 from models.sl_config import SLConfig
-from controller.clustermanager import create_cluster, get_master_password
+from controller.clustermanager import create_cluster, get_master_password,destroy_cluster
 from controller.handle_provisioning import get_cluster_status
 import SoftLayer
 from .marshall import EventXml
@@ -174,7 +174,8 @@ def _dashboard():
     if not logged_in():
         return redirect('/')
 
-    return render_template('dashboard.html', title='Dashboard', username=session["username"])
+
+    return render_template('dashboard.html', title='Dashboard', username=session["username"],clusters=Cluster.by_owner_id(session["username"]))
 
 @app.route('/about', methods=['POST', 'GET'])
 def _about():
@@ -200,12 +201,12 @@ def _create_cluster():
 
     form = SLConfigForm()
     if form.validate_on_submit():
-        logging.debug('sl_ssh_key={}, '
+        logging.debug('cluster_name={},sl_ssh_key={}, '
                       'sl_domain={},'
                       'sl_datacenter={}, num_workers={}, '
                       'sl_cpus={}, sl_memory={},'
                       'sl_disk_capacity={}, sl_network_speed={}'.format(
-            form.sl_ssh_key.data,
+            form.cluster_name.data, form.sl_ssh_key.data,
             form.sl_domain.data,
             form.sl_datacenter.data, form.num_workers.data,
             form.sl_cpus.data, form.sl_memory.data,
@@ -231,7 +232,8 @@ def _create_cluster():
         )
         owner_id = session["username"]
 
-        cluster_id = create_cluster(owner_id, sl_config)
+
+        cluster_id = create_cluster(owner_id, sl_config,form.cluster_name.data)
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
 
@@ -239,6 +241,42 @@ def _create_cluster():
         # flash("hi")
 
     return render_template('form.html', title='Create Cluster', form=form,username=session["username"])
+
+@app.route('/view', methods=['POST', 'GET'])
+def _view():
+
+    if not logged_in():
+        return redirect('/')
+
+    clusterid = request.args.get('clusterid')
+
+    cluster = Cluster.by_uuid(clusterid)
+
+    return render_template('view.html', title='View Cluster', 
+        username=session["username"],
+        cluster_name = cluster.cluster_name,
+        num_workers = cluster.num_workers,
+        cpus = cluster.cpus,
+        memory = cluster.memory,
+        disk_capacity = cluster.disk_capacity,
+        network_speed = cluster.network_speed,
+        sl_domain = cluster.sl_domain,
+        sl_datacenter = cluster.sl_datacenter,
+        master_ip = cluster.master_ip,
+        master_password = cluster.master_password
+        )
+
+@app.route('/delete', methods=['POST', 'GET'])
+def _delete():
+
+    if not logged_in():
+        return redirect('/')
+
+    clusterid = request.args.get('clusterid')
+
+    destroy_cluster(clusterid)
+
+    return _dashboard()
 
 
 @app.route('/master_ip', methods=['POST', 'GET'])
@@ -271,7 +309,8 @@ def _cluster_status():
                            master_ip=master_ip,
                            master_password=master_password,
                            stdout=stdout,
-                           stderr=stderr)
+                           stderr=stderr,
+                           username=session["username"])
 
 
 @app.route('/cluster_stdout', methods=['POST', 'GET'])

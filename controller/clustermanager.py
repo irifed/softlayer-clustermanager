@@ -9,7 +9,7 @@ from .handle_provisioning import provision_cluster
 logger = logging.getLogger("endpoint")
 
 
-def create_cluster(owner_id, sl_config):
+def create_cluster(owner_id, sl_config,cluster_name):
     cluster_id = str(uuid.uuid4())
 
     logger.info('Creating cluster id = {}'.format(cluster_id))
@@ -17,10 +17,12 @@ def create_cluster(owner_id, sl_config):
     logfile = open('create_cluster.log', 'a')
     logfile.write('Created cluster {}\n'.format(cluster_id))
 
+
     # TODO store all cluster parameters, not only num_workers (?)
     cluster = Cluster(
         uuid=cluster_id,
         owner_id=owner_id,
+        cluster_name=cluster_name,
         num_workers=sl_config.num_workers,
         cpus=sl_config.cpus,
         memory=sl_config.memory,

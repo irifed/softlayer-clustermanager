@@ -7,6 +7,14 @@
   <form action='' method='post' name='create_cluster'>
 
       {{ form.hidden_tag() }}
+      <p>Cluster Name
+          (required, this is the name you will see on your Cluster Dashboard):<br>
+          {{ form.cluster_name(size=64) }}
+          {% for error in form.cluster_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}<br></p>
+
+      {{ form.hidden_tag() }}
       <p>SoftLayer SSH key label
           (optional, should be provisioned on SoftLayer in advance):<br>
           {{ form.sl_ssh_key(size=64) }}

@@ -74,6 +74,8 @@ class Cluster(db.Model):
     master_ip = db.Column(db.String(20))
     master_password = db.Column(db.String(20))
 
+    cluster_name = db.Column(db.String(100))
+
     def __init__(self, uuid, owner_id, num_workers=5, cpus=4, memory=16384,
                  disk_capacity=100,
                  network_speed=1000,
@@ -83,7 +85,8 @@ class Cluster(db.Model):
                  sl_domain='irina.com',
                  sl_datacenter='dal06',
                  master_ip='0.0.0.0',
-                 master_password=''):
+                 master_password='',
+                 cluster_name = "pizza"):
         self.uuid = uuid
         self.owner_id = owner_id
 
@@ -103,6 +106,8 @@ class Cluster(db.Model):
         self.master_ip = master_ip
         self.master_password = master_password
 
+        self.cluster_name = cluster_name
+
     @classmethod
     def by_uuid(cls, uuid):
         return cls.query.filter(cls.uuid == uuid).first()
@@ -119,3 +124,6 @@ class Cluster(db.Model):
             # no user found or multiple users found
             return None
 
+    @classmethod
+    def by_owner_id(cls, owner_id):
+        return cls.query.filter(cls.owner_id == owner_id)
