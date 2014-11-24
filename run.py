@@ -16,7 +16,7 @@ logger.setLevel(level=logging.DEBUG)
 
 
 def connect_db():
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/clusters/test.db'
     db.init_app(app)
     with app.app_context():
         # db.drop_all() # DEBUG uncomment to reset tables for debugging
