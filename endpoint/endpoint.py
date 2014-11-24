@@ -260,6 +260,7 @@ def _view():
         memory = cluster.memory,
         disk_capacity = cluster.disk_capacity,
         network_speed = cluster.network_speed,
+        sl_ssh_key = cluster.sl_ssh_key,
         sl_domain = cluster.sl_domain,
         sl_datacenter = cluster.sl_datacenter,
         master_ip = cluster.master_ip,
