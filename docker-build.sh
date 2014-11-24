@@ -6,5 +6,5 @@
 # docker-build is necessary only if additional dependency is required in image,
 # e.g. additional python package.
 
-sudo docker build -t "irifed/flask_vagrant_ansible" .
+sudo docker build -t "irifed/flask_vagrant_ansible:latest" .
 
