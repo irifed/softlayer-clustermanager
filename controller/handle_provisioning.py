@@ -5,13 +5,14 @@ import os
 import re
 import threading
 import logging
-from time import sleep
-
+import subprocess
+import collections
+from queue import Queue
+import time
 import SoftLayer
 
 from endpoint import app
 
-from .asyncproc import Process
 from models.models import db, Cluster
 
 import pprint
@@ -32,37 +33,84 @@ def extract_master_ip(output):
             output).groups()[0]
     return master_ip
 
-# stolen from http://stackoverflow.com/questions/4417546/constantly-print-subprocess-output-while-process-is-running
+# stolen from https://gist.github.com/soxofaan/9217628
+class AsynchronousFileReader(threading.Thread):
+    '''
+    Helper class to implement asynchronous reading of a file
+    in a separate thread. Pushes read lines on a queue to
+    be consumed in another thread.
+    '''
+
+    def __init__(self, fd, queue):
+        assert isinstance(queue, Queue)
+        assert isinstance(fd.readline, collections.Callable)
+        threading.Thread.__init__(self)
+        self._fd = fd
+        self._queue = queue
+
+    def run(self):
+        '''The body of the tread: read lines and put them on the queue.'''
+        for line in iter(self._fd.readline, b''):
+            self._queue.put(line)
+
+    def eof(self):
+        '''Check whether there is no more content to expect.'''
+        return not self.is_alive() and self._queue.empty()
+
 def run_process(command, cluster_id):
-    vagrant = Process(command)
+    # vagrant = Process(command)
+
+    print('RUN_PROCESS: command = {}\n'.format(command))
+
+    # Launch the command as subprocess.
+    process = subprocess.Popen(command, 
+                               stdout=subprocess.PIPE, 
+                               stderr=subprocess.PIPE,
+                               shell=True)
     outf = open('vagrant.out', 'w')
     errf = open('vagrant.err', 'w')
     masterip = None
-    while True:
-        # print any new output to files
-        try:
-            out, err = vagrant.readboth()
-            if out != '':
-                outf.write(out)
-                outf.flush()
-            if err != '':
-                errf.write(err)
-                errf.flush()
-        except Exception as e:
-            print(e.args)
 
+    # Launch the asynchronous readers of the process' stdout and stderr.
+    stdout_queue = Queue()
+    stdout_reader = AsynchronousFileReader(process.stdout, stdout_queue)
+    stdout_reader.start()
+    stderr_queue = Queue()
+    stderr_reader = AsynchronousFileReader(process.stderr, stderr_queue)
+    stderr_reader.start()
 
-        # check to see if process has ended
-        poll = vagrant.wait(os.WNOHANG)
-        if poll is not None and out == '':
-            break
+    # Check the queues if we received some output (until there is nothing more to get).
+    while not stdout_reader.eof() or not stderr_reader.eof():
+        # Show what we received from standard output.
+        while not stdout_queue.empty():
+            line = stdout_queue.get()
+            line = line.decode(encoding='UTF-8')
+            print('STDOUT: {}\n'.format(repr(line)))
+            outf.write(line)
+            outf.flush()
+            if 'master: SSH address:' in repr(line):
+                masterip = extract_master_ip(line)
+                print('MASTER IP IS: ' + masterip)
+                store_master_ip_and_password(masterip, cluster_id)
 
-        if 'master: SSH address:' in str(out):
-            masterip = extract_master_ip(out)
-            print('MASTER IP IS: ' + masterip)
-            store_master_ip_and_password(masterip, cluster_id)
+        # Show what we received from standard error.
+        while not stderr_queue.empty():
+            line = stderr_queue.get()
+            line = line.decode(encoding='UTF-8')
+            print('STDERR: {}\n'.format(repr(line)))
+            errf.write(line)
+            errf.flush()
 
-        sleep(2)
+        # Sleep a bit before asking the readers again.
+        time.sleep(2)
+
+    # Let's be tidy and join the threads we've started.
+    stdout_reader.join()
+    stderr_reader.join()
+
+    # Close subprocess' file descriptors.
+    process.stdout.close()
+    process.stderr.close()
 
     outf.close()
     errf.close()
