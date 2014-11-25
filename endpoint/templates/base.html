@@ -20,12 +20,7 @@
     <link href="https://mms.ibmcloud.com/static/web/font-awesome-4.1.0/css/font-awesome.min.css"
           rel="stylesheet" type="text/css">
     <script type=text/javascript>
-        $SCRIPT_ROOT = {
-        {
-            request.script_root | tojson | safe
-        }
-        }
-        ;
+        $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
     </script>
 </head>
 <body>
