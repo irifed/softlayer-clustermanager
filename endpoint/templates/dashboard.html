@@ -28,9 +28,9 @@
                 </td>
                 <td>Active</td>
                 <td>
-                    <a class="viewlink" href="view?cluster_id={{cluster.uuid}}">View</a>
-                    <a class="viewlink" href="cluster_status?cluster_id={{cluster.uuid}}">Logs</a>
-                    <a class="deletelink"
+                    <a class="btn btn-success" href="view?cluster_id={{cluster.uuid}}">View</a>
+                    <a class="btn btn-info" href="cluster_status?cluster_id={{cluster.uuid}}">Logs</a>
+                    <a class="btn btn-danger"
                        onclick="return confirm('Are you sure you want to destroy the cluster?')"
                        href="delete?cluster_id={{cluster.uuid}}">Delete</a>
                 </td>
