@@ -237,6 +237,11 @@ def _create_cluster():
             sl_username=session["username"],
             sl_api_key=session["apikey"],
 
+            cpus=form.sl_cpus.data,
+            memory=form.sl_memory.data,
+            disk_capacity=form.sl_disk_capacity.data,
+            network_speed=form.sl_network_speed.data,
+
             sl_ssh_keys=ssh_keys,
             sl_private_key_path=private_key_path,
 
@@ -268,6 +273,7 @@ def _view():
     cluster = Cluster.by_uuid(cluster_id)
 
     return render_template('view.html', title='View Cluster',
+                           cluster_id=cluster_id,
                            username=session["username"],
                            cluster_name=cluster.cluster_name,
                            num_workers=cluster.num_workers,
