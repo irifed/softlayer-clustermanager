@@ -4,14 +4,16 @@ MAINTAINER Irina Fedulova <fedulova@gmail.com>
 # Use baseimage-docker's init system.
 # CMD ["/sbin/my_init"]
 
-RUN apt-get update && apt-get install -y python-dev python-pip python3-pip sqlite3 wget git
+RUN apt-get update 
+RUN apt-get install -y python-dev python-pip python3-pip sqlite3 wget git
 
 # Ansible requires Python 2.4+
 RUN pip install ansible
 
 # The rest of our app works under Python 3
 RUN pip3 install SoftLayer
-RUN pip3 install Flask Flask-OpenID gunicorn Flask-SQLAlchemy python-oauth2 pyzmq tornado WTForms flask-wtf
+RUN pip3 install Flask Flask-OpenID gunicorn Flask-SQLAlchemy \
+                 python-oauth2 pyzmq tornado WTForms flask-wtf tornado
 
 # Install Vagrant
 WORKDIR /tmp
