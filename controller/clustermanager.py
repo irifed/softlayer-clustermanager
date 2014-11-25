@@ -3,7 +3,7 @@ import uuid
 
 
 from models.models import db, Cluster
-from .handle_provisioning import provision_cluster
+from .handle_provisioning import async_provision_cluster, async_destroy_cluster
 
 
 logger = logging.getLogger("endpoint")
@@ -43,7 +43,7 @@ def create_cluster(owner_id, sl_config,cluster_name):
     # p = Popen(cmd, shell=True, bufsize=10000, stdin=PIPE, stdout=logfile, stderr=STDOUT)
     ## END DEBUG
 
-    provision_cluster(cluster_id, sl_config)
+    async_provision_cluster(cluster_id, sl_config)
 
     return cluster_id
 
@@ -53,12 +53,12 @@ def destroy_cluster(cluster_id):
     logfile = open('create_cluster.log', 'a')
     logfile.write('Destroyed cluster {}\n'.format(cluster_id))
 
+    async_destroy_cluster(cluster_id)
+
     logger.debug('removing cluster {} from table Cluster'.format(cluster_id))
     cluster = Cluster.by_uuid(cluster_id)
     db.session.delete(cluster)
     db.session.commit()
-
-    # TODO call vagrant destroy for this cluster
 
 
 def get_master_password(cluster_id):

@@ -9,13 +9,12 @@ import subprocess
 import collections
 from queue import Queue
 import time
+
 import SoftLayer
 
 from endpoint import app
-
 from models.models import db, Cluster
 
-import pprint
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s')
@@ -29,17 +28,18 @@ vagrantroot = '/var/clusters/cluster'
 
 def extract_master_ip(output):
     master_ip = re.search(
-            'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
-            output).groups()[0]
+        'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
+        output).groups()[0]
     return master_ip
 
-# stolen from https://gist.github.com/soxofaan/9217628
+
+# borrowed from https://gist.github.com/soxofaan/9217628
 class AsynchronousFileReader(threading.Thread):
-    '''
+    """
     Helper class to implement asynchronous reading of a file
     in a separate thread. Pushes read lines on a queue to
     be consumed in another thread.
-    '''
+    """
 
     def __init__(self, fd, queue):
         assert isinstance(queue, Queue)
@@ -49,26 +49,34 @@ class AsynchronousFileReader(threading.Thread):
         self._queue = queue
 
     def run(self):
-        '''The body of the tread: read lines and put them on the queue.'''
+        """The body of the tread: read lines and put them on the queue."""
         for line in iter(self._fd.readline, b''):
             self._queue.put(line)
 
     def eof(self):
-        '''Check whether there is no more content to expect.'''
+        """Check whether there is no more content to expect."""
         return not self.is_alive() and self._queue.empty()
 
+
 def run_process(command, cluster_id):
-    # vagrant = Process(command)
+    """
+    This function runs in separate thread.
+    Execute `command` in a shell.
+
+    NOTE we call it both for provisioning and destroy, but always watch for
+    master ip.
+    TODO refactor this
+    """
 
     print('RUN_PROCESS: command = {}\n'.format(command))
 
     # Launch the command as subprocess.
-    process = subprocess.Popen(command, 
-                               stdout=subprocess.PIPE, 
+    process = subprocess.Popen(command,
+                               stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
                                shell=True)
-    outf = open('vagrant.out', 'w')
-    errf = open('vagrant.err', 'w')
+    outf = open('vagrant.out', 'w+')
+    errf = open('vagrant.err', 'w+')
     masterip = None
 
     # Launch the asynchronous readers of the process' stdout and stderr.
@@ -118,23 +126,19 @@ def run_process(command, cluster_id):
     return masterip
 
 
-def handle_process_and_write(runcommand, cluster_id):
-    run_process(runcommand, cluster_id)
-
-
 def async_run_process(runcommand, cluster_id):
     """execute following on a new thread
     handlepProcessAndWrite(runcommand, curdir)
     """
 
     process_args = (runcommand, cluster_id)
-    t = threading.Thread(target=handle_process_and_write, name='cucumber',
+    t = threading.Thread(target=run_process, name='cucumber',
                          args=process_args)
     t.daemon = False
     t.start()
 
 
-def do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config):
+def async_provision_cluster(cluster_id, sl_config):
     curdir = vagrantroot + '.' + cluster_id
     shutil.copytree(cleanrepo, curdir, symlinks=False, ignore=None)
     os.chdir(curdir)
@@ -149,9 +153,16 @@ def do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config):
     async_run_process(runcommand, cluster_id)
 
 
-def provision_cluster(cluster_id, sl_config):
-    # TODO get rid of this function
-    do_provisioning(cluster_id, cleanrepo, vagrantroot, sl_config)
+def async_destroy_cluster(cluster_id):
+    curdir = vagrantroot + '.' + cluster_id
+    os.chdir(curdir)
+
+    runcommand = 'vagrant destroy -f'
+    logger.debug(runcommand)
+
+    async_run_process(runcommand, cluster_id)
+
+    # TODO when cluster is destroyed, remove the containing folder
 
 
 def get_cluster_status(cluster_id):
@@ -160,7 +171,6 @@ def get_cluster_status(cluster_id):
     stdout = open(cluster_home + '/vagrant.out', 'r')
     stderr = open(cluster_home + '/vagrant.err', 'r')
 
-    # TODO grep out master ip address
     cluster_log = stdout.read()
     cluster_err = stderr.read()
 
@@ -181,7 +191,10 @@ def get_master_password_from_sl(master_ip, cluster_id):
         # retrieve sl username and api key by cluster_id
         cluster = Cluster.by_uuid(cluster_id)
 
-        logger.debug('cluster_id={}, sl_username={}, master_ip={}'.format(cluster_id, cluster.sl_username, master_ip))
+        logger.debug(
+            'cluster_id={}, sl_username={}, master_ip={}'.format(cluster_id,
+                                                                 cluster.sl_username,
+                                                                 master_ip))
 
         client = SoftLayer.Client(username=cluster.sl_username,
                                   api_key=cluster.sl_api_key)
@@ -192,18 +205,19 @@ def get_master_password_from_sl(master_ip, cluster_id):
             master_details = vs_manager.list_instances(public_ip=master_ip)
             if len(master_details) > 1:
                 logger.error(
-                    'SoftLayer API returned non-unique instance for ip = {}'.format(master_ip))
+                    'SoftLayer API returned non-unique instance for ip = {}'.format(
+                        master_ip))
 
             master_id = master_details[0]['id']
             master_instance = vs_manager.get_instance(instance_id=master_id)
-            master_password = master_instance['operatingSystem']['passwords'][0]['password']
+            master_password = \
+                master_instance['operatingSystem']['passwords'][0]['password']
             # store password in db for faster retrieval in the future
             cluster.master_password = master_password
             db.session.commit()
 
         except Exception:
             master_password = ''
-
 
         return master_password
 
