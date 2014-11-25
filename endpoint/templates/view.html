@@ -7,6 +7,7 @@
     Cluster Name: {{cluster_name}}
 </h1>
 
+<p><b>Cluster State:</b> {{cluster_state}}</p>
 
 <p><b>Master IP:</b> {{master_ip}}</p>
 
@@ -37,12 +38,16 @@
 
 <p><b>Number of Workers:</b> {{num_workers}}</p>
 
+<a class="btn btn-success" href="dashboard">Dashboard</a>
 <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
+
+<!-- TODO display only one of buttons according to state -->
+<a class="btn btn-warning" href="suspend?cluster_id={{cluster_id}}">Suspend</a>
+<a class="btn btn-warning" href="resume?cluster_id={{cluster_id}}">Resume</a>
 
 <!-- TODO redirect to dashboard after user clicks ok -->
 <a class="btn btn-danger"
    href="delete?cluster_id={{cluster_id}}"
    onclick="return confirm('Are you sure you want to destroy the cluster?')">Delete</a>
-
 
 {% endblock %}

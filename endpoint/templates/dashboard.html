@@ -26,7 +26,7 @@
                 <td>
                     {{cluster.cluster_name}}
                 </td>
-                <td>Active</td>
+                <td>{{cluster.cluster_state}}</td>
                 <td>
                     <a class="btn btn-success" href="view?cluster_id={{cluster.uuid}}">View</a>
                     <a class="btn btn-info" href="cluster_status?cluster_id={{cluster.uuid}}">Logs</a>
