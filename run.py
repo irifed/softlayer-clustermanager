@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 import logging
 
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+
 from endpoint import app
 from models.models import db
 
@@ -12,7 +16,6 @@ logging.getLogger('SoftLayer').setLevel(logging.WARNING)
 
 logger = logging.getLogger('endpoint')
 logger.setLevel(level=logging.DEBUG)
-
 
 
 def connect_db():
@@ -27,5 +30,7 @@ if __name__ == "__main__":
     connect_db()
 
     app.debug = True
-    app.run('0.0.0.0')
 
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5000)
+    IOLoop.instance().start()
