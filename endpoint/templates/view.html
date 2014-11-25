@@ -8,23 +8,34 @@
 </h1>
 
 
-<h4>Master IP: {{master_ip}}</h4>
+<p><b>Master IP:</b> {{master_ip}}</p>
 
-<h4>Master Password: {{master_password }}</h4>
+<p><b>Master Password:</b> {{master_password }}</p>
 
-<h4>CPUS: {{cpus}}</h4>
+<p>You can login to master node using one of the following commands: </p>
+<ul>
+    <li>With password (listed above):
+        <pre id="login1">ssh root@</pre>
+    <li>With SSH key (if you entered its name during provisioning):
+        <pre id="login2">ssh -i &lt;local path to your SoftLayer private key&gt; root@</pre>
+    </li>
+</ul>
+<br>
 
-<h4>Memory: {{memory}}</h4>
 
-<h4>Disk Capacity: {{disk_capacity}}</h4>
+<p><b>CPUS:</b> {{cpus}}</p>
 
-<h4>Network Speed: {{network_speed}}</h4>
+<p><b>Memory:</b> {{memory}}</p>
 
-<h4>SoftLayer SSH Key: {{sl_ssh_key}}</h4>
+<p><b>Disk Capacity:</b> {{disk_capacity}}</p>
 
-<h4>SoftLayer Domain: {{sl_domain}}</h4>
+<p><b>Network Speed:</b> {{network_speed}}</p>
 
-<h4>Number of Workers: {{num_workers}}</h4>
+<p><b>SoftLayer SSH Key:</b> {{sl_ssh_key}}</p>
+
+<p><b>SoftLayer Domain:</b> {{sl_domain}}</p>
+
+<p><b>Number of Workers:</b> {{num_workers}}</p>
 
 <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
 
