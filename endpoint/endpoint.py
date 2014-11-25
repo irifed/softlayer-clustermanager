@@ -8,21 +8,21 @@ Largely borrowed from https://github.com/AppDirect/Sample-Python-Application
 
 import logging
 from xml.dom import minidom
-
-import oauth2
-from flask import request, Response, render_template, redirect, flash,session
 import traceback
-from . import app
 import sys
 
+import oauth2
+from flask import request, Response, render_template, redirect, flash, session
+import SoftLayer
+
+from . import app
 from models.models import Cluster
 from models.sl_config import SLConfig
-from controller.clustermanager import create_cluster, get_master_password,destroy_cluster
+from controller.clustermanager import create_cluster, get_master_password, \
+    destroy_cluster
 from controller.handle_provisioning import get_cluster_status
-import SoftLayer
 from .marshall import EventXml
 from .events import HandleEvent
-
 from .forms import SLConfigForm
 
 
@@ -34,11 +34,15 @@ event_url_template = 'https://www.appdirect.com/api/integration/v1/events/{}'
 consumer_key = 'bdas-cluster-15877'
 consumer_secret = 'PMBysgKaJtWZrOiq'
 
-def getClient(username,apikey):
+
+def getClient(username, apikey):
     # Note: this does not raise a SL exception, even if the api key is wrong
-    return SoftLayer.Client(username=username, api_key=apikey, endpoint_url=SoftLayer.API_PUBLIC_ENDPOINT)
+    return SoftLayer.Client(username=username, api_key=apikey,
+                            endpoint_url=SoftLayer.API_PUBLIC_ENDPOINT)
+
+
 # def verifyCredentials():
-#     '''Make a trivial api call to SL to verify the username and api key.'''
+# '''Make a trivial api call to SL to verify the username and api key.'''
 #     try:
 #         user = self.client['Account'].getCurrentUser(mask='email')
 #         return 200, 'SoftLayer credentials ok'
@@ -48,8 +52,8 @@ def getClient(username,apikey):
 
 @app.route("/")
 def index():
-
     return render_template('uilogin.html')
+
 
 @app.route('/uilogin', methods=['GET', 'POST'])
 def login():
@@ -63,15 +67,15 @@ def login():
         else:
             apiKey = None
 
-        if (request.method == 'POST') and userName!=None and apiKey!=None:
-    
+        if (request.method == 'POST') and userName != None and apiKey != None:
+
             # User id and API key have been submitted so now we need to authenticate the user
             # and check for any missing ACLs that might later halt the process.
             #
 
-            try: 
+            try:
 
-                client = getClient(userName,apiKey)
+                client = getClient(userName, apiKey)
                 user = client['Account'].getCurrentUser(mask='email')
                 useremail = user["email"]
 
@@ -80,7 +84,8 @@ def login():
                 return redirect("/")
 
             except Exception as e:
-                msg = ["Internal error occurred:"+e.args[0]+". Please contact support."]
+                msg = ["Internal error occurred:" + e.args[
+                    0] + ". Please contact support."]
                 flash(msg)
                 traceback.print_exc()
                 return redirect("/")
@@ -94,7 +99,7 @@ def login():
 
             return _dashboard()
 
-        elif request.method =="POST":
+        elif request.method == "POST":
             # The user did not specify all the required login information.
             #
             if ( not userName ):
@@ -102,7 +107,8 @@ def login():
             elif (not apiKey):
                 msg = ['Please specify your SoftLayer API Key.']
             else:
-                msg = ['Please specify your email address when acting as an agent for the user.']
+                msg = [
+                    'Please specify your email address when acting as an agent for the user.']
             flash(msg)
             return redirect("/")
 
@@ -111,10 +117,12 @@ def login():
 
     except Exception as e:
         traceback.print_exc()
-        msg = ["Internal error occurred:"+e.args[0]+". Please contact support."]
+        msg = ["Internal error occurred:" + e.args[
+            0] + ". Please contact support."]
         flash(msg)
 
     return redirect("/uilogin")
+
 
 @app.route('/uilogout')
 def logout():
@@ -122,6 +130,7 @@ def logout():
     session.pop('apikey', None)
     session.pop("useremail")
     return redirect('/')
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def _login():
@@ -135,6 +144,7 @@ def _login():
     account_id = request.args.get('accountIdentifier')
     cluster = Cluster.by_openid(openid)
     return "openid = {}, cluster = {}".format(openid, cluster)
+
 
 @app.route('/event', methods=['POST', 'GET'])
 def _event():
@@ -169,33 +179,37 @@ def _event():
 
     return Response(xml_response, mimetype='text/xml')
 
+
 @app.route('/dashboard', methods=['POST', 'GET'])
 def _dashboard():
     if not logged_in():
         return redirect('/')
 
+    return render_template('dashboard.html', title='Dashboard',
+                           username=session["username"],
+                           clusters=Cluster.by_owner_id(session["username"]))
 
-    return render_template('dashboard.html', title='Dashboard', username=session["username"],clusters=Cluster.by_owner_id(session["username"]))
 
 @app.route('/about', methods=['POST', 'GET'])
 def _about():
-
     if not logged_in():
         return redirect('/')
 
-    return render_template('about.html', title='About', username=session["username"])
+    return render_template('about.html', title='About',
+                           username=session["username"])
+
 
 @app.route('/help', methods=['POST', 'GET'])
 def _help():
-
     if not logged_in():
         return redirect('/')
 
-    return render_template('help.html', title='Help', username=session["username"])
+    return render_template('help.html', title='Help',
+                           username=session["username"])
+
 
 @app.route('/create_cluster', methods=['POST', 'GET'])
 def _create_cluster():
-
     if not logged_in():
         return redirect('/')
 
@@ -232,50 +246,51 @@ def _create_cluster():
         )
         owner_id = session["username"]
 
-
-        cluster_id = create_cluster(owner_id, sl_config,form.cluster_name.data)
+        cluster_id = create_cluster(owner_id, sl_config,
+                                    form.cluster_name.data)
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
 
-    # else:
+        # else:
         # flash("hi")
 
-    return render_template('form.html', title='Create Cluster', form=form,username=session["username"])
+    return render_template('form.html', title='Create Cluster', form=form,
+                           username=session["username"])
+
 
 @app.route('/view', methods=['POST', 'GET'])
 def _view():
-
     if not logged_in():
         return redirect('/')
 
-    clusterid = request.args.get('clusterid')
+    cluster_id = request.args.get('cluster_id')
 
-    cluster = Cluster.by_uuid(clusterid)
+    cluster = Cluster.by_uuid(cluster_id)
 
-    return render_template('view.html', title='View Cluster', 
-        username=session["username"],
-        cluster_name = cluster.cluster_name,
-        num_workers = cluster.num_workers,
-        cpus = cluster.cpus,
-        memory = cluster.memory,
-        disk_capacity = cluster.disk_capacity,
-        network_speed = cluster.network_speed,
-        sl_ssh_key = cluster.sl_ssh_key,
-        sl_domain = cluster.sl_domain,
-        sl_datacenter = cluster.sl_datacenter,
-        master_ip = cluster.master_ip,
-        master_password = cluster.master_password
-        )
+    return render_template('view.html', title='View Cluster',
+                           username=session["username"],
+                           cluster_name=cluster.cluster_name,
+                           num_workers=cluster.num_workers,
+                           cpus=cluster.cpus,
+                           memory=cluster.memory,
+                           disk_capacity=cluster.disk_capacity,
+                           network_speed=cluster.network_speed,
+                           sl_ssh_key=cluster.sl_ssh_key,
+                           sl_domain=cluster.sl_domain,
+                           sl_datacenter=cluster.sl_datacenter,
+                           master_ip=cluster.master_ip,
+                           master_password=cluster.master_password
+    )
+
 
 @app.route('/delete', methods=['POST', 'GET'])
 def _delete():
-
     if not logged_in():
         return redirect('/')
 
-    clusterid = request.args.get('clusterid')
+    cluster_id = request.args.get('cluster_id')
 
-    destroy_cluster(clusterid)
+    destroy_cluster(cluster_id)
 
     return _dashboard()
 
@@ -296,6 +311,7 @@ def _master_password():
     master_password = get_master_password(cluster_id)
 
     return master_password
+
 
 @app.route('/cluster_status', methods=['POST', 'GET'])
 def _cluster_status():

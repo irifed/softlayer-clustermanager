@@ -27,6 +27,7 @@ xml_order_error = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
    <message>{}</message>
 </result>'''
 
+
 def HandleEvent(event_xml):
     logger.info('Received event type {}'.format(event_xml.eventType))
     if event_xml.eventType == "SUBSCRIPTION_ORDER":
@@ -34,21 +35,22 @@ def HandleEvent(event_xml):
     elif event_xml.eventType == "SUBSCRIPTION_CANCEL":
         return CancelOrder(event_xml)
 
-    # TODO
-    # elif event_xml.eventType == "SUBSCRIPTION_CHANGE":
-    #     return ChangeOrder(event_xml)
-    # elif event_xml.eventType == "USER_ASSIGNMENT":
-    #     return AssignUser(event_xml)
-    # elif event_xml.eventType == "USER_UNASSIGNMENT":
-    #     return UnassignUser(event_xml)
-    # else:
-    #     message = "Event type %s is not configured" % event_xml.eventType
-    #     return errorTemplate % ( "CONFIGURATION_ERROR", message)
+        # TODO
+        # elif event_xml.eventType == "SUBSCRIPTION_CHANGE":
+        # return ChangeOrder(event_xml)
+        # elif event_xml.eventType == "USER_ASSIGNMENT":
+        #     return AssignUser(event_xml)
+        # elif event_xml.eventType == "USER_UNASSIGNMENT":
+        #     return UnassignUser(event_xml)
+        # else:
+        #     message = "Event type %s is not configured" % event_xml.eventType
+        #     return errorTemplate % ( "CONFIGURATION_ERROR", message)
+
 
 def CreateOrder(event_xml):
     logger.info("CreateOrder {} {} {}".format(event_xml.payload.company.name,
-                                    event_xml.payload.company.website,
-                                    event_xml.payload.order.edition))
+                                              event_xml.payload.company.website,
+                                              event_xml.payload.order.edition))
 
     companySubscription = event_xml.payload.CreateSubscription()
     db.session.add(companySubscription)
@@ -77,6 +79,7 @@ def CreateOrder(event_xml):
 
     # return cluster_id, AppDirect will store it as accountIdentifier
     return xml_order_ok.format(cluster_id)
+
 
 def CancelOrder(event_xml):
     cluster_id = event_xml.payload.account.accountIdentifier

@@ -1,54 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>master ip: <div id="master_ip"></div></h3>
-<h3>master password: <div id="master_password"></div></h3>
+<h3>master ip:
+    <div id="master_ip"></div>
+</h3>
+<h3>master password:
+    <div id="master_password"></div>
+</h3>
 <p>You can login to master node using one of the following commands: </p>
-        <ul>
-            <li>With password (listed above):
-                <pre id="login1">ssh root@</pre>
-            <li>With SSH key (if you entered its name during provisioning):
-                <pre id="login2">ssh -i &lt;local path to your SoftLayer private key&gt; root@</pre></li>
-        </ul>
+<ul>
+    <li>With password (listed above):
+        <pre id="login1">ssh root@</pre>
+    <li>With SSH key (if you entered its name during provisioning):
+        <pre id="login2">ssh -i &lt;local path to your SoftLayer private key&gt; root@</pre>
+    </li>
+</ul>
 <br>
 <script>
-setInterval( function() {
-     $.get(
-        $SCRIPT_ROOT + '/master_ip?cluster_id={{cluster_id}}',
-        {},
-        function(data) {
-          $("#master_ip").text(data);
-          $("#login1").text('ssh root@' + data);
-          $("#login2").text('ssh -i <local path to your SoftLayer private key> root@' + data);
-        });
-  },
-  5000);
-setInterval( function() {
-     $.get(
-        $SCRIPT_ROOT + '/master_password?cluster_id={{cluster_id}}',
-        {},
-        function(data) {
-          $("#master_password").text(data);
-        });
-  },
-  5000);
-setInterval( function() {
-     $.get(
-        $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
-        {},
-        function(data) {
-          $("#stdout").text(data);
-        });
-  },
-  5000);
-setInterval( function() {
-     $.get(
-        $SCRIPT_ROOT + '/cluster_stderr?cluster_id={{cluster_id}}',
-        {},
-        function(data) {
-          $("#stderr").text(data.result);
-        });
-  },
-  5000);
+    setInterval(function () {
+                $.get(
+                        $SCRIPT_ROOT + '/master_ip?cluster_id={{cluster_id}}',
+                        {},
+                        function (data) {
+                            $("#master_ip").text(data);
+                            $("#login1").text('ssh root@' + data);
+                            $("#login2").text('ssh -i <local path to your SoftLayer private key> root@' + data);
+                        });
+            },
+            5000);
+    setInterval(function () {
+                $.get(
+                        $SCRIPT_ROOT + '/master_password?cluster_id={{cluster_id}}',
+                        {},
+                        function (data) {
+                            $("#master_password").text(data);
+                        });
+            },
+            5000);
+    setInterval(function () {
+                $.get(
+                        $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
+                        {},
+                        function (data) {
+                            $("#stdout").text(data);
+                        });
+            },
+            5000);
+    setInterval(function () {
+                $.get(
+                        $SCRIPT_ROOT + '/cluster_stderr?cluster_id={{cluster_id}}',
+                        {},
+                        function (data) {
+                            $("#stderr").text(data.result);
+                        });
+            },
+            5000);
 </script>
 <h3>Cluster provisioning log:</h3>
 <pre id="stdout"></pre>

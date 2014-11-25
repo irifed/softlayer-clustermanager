@@ -4,64 +4,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/starter-template.css" rel="stylesheet">
-    <link href="https://mms.ibmcloud.com/static/web/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://mms.ibmcloud.com/static/web/css/bootstrap.min.css"
+          rel="stylesheet">
 
     <!-- MetisMenu CSS -->
-    <link href="https://mms.ibmcloud.com/static/web/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link href="https://mms.ibmcloud.com/static/web/css/plugins/metisMenu/metisMenu.min.css"
+          rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="https://mms.ibmcloud.com/static/web/css/sb-admin-2.css" rel="stylesheet">
-
+    <link href="https://mms.ibmcloud.com/static/web/css/sb-admin-2.css"
+          rel="stylesheet">
 
 
     <!-- Custom Fonts -->
-    <link href="https://mms.ibmcloud.com/static/web/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://mms.ibmcloud.com/static/web/font-awesome-4.1.0/css/font-awesome.min.css"
+          rel="stylesheet" type="text/css">
     <script type=text/javascript>
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        $SCRIPT_ROOT = {
+        {
+            request.script_root | tojson | safe
+        }
+        }
+        ;
     </script>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-   {% if username %}
-   <ul class="nav navbar-nav navbar-right">
+    {% if username %}
+    <ul class="nav navbar-nav navbar-right">
 
-                <li><a href="#">Manage</a></li>
-                <li><a href="{{ url_for('_help') }}">Help</a></li>
+        <li><a href="#">Manage</a></li>
+        <li><a href="{{ url_for('_help') }}">Help</a></li>
 
-                <li class="dropdown">
-                    <a class="dropdown-toggle userid" data-toggle="dropdown" href="#"> {{username}} <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                        <li><a href="uilogout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                        </li>
-                    </ul>
+        <li class="dropdown">
+            <a class="dropdown-toggle userid" data-toggle="dropdown" href="#">
+                {{username}} <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+                <li><a href="uilogout"><i class="fa fa-sign-out fa-fw"></i>
+                    Logout</a>
                 </li>
+            </ul>
+        </li>
     </ul>
     {% endif %}
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
             {% if username %}
-            <a class="navbar-brand" href="{{ url_for('_dashboard') }}">SoftLayer Cluster Manager</a>
-            {% else %} 
+            <a class="navbar-brand" href="{{ url_for('_dashboard') }}">SoftLayer
+                Cluster Manager</a>
+            {% else %}
             <a class="navbar-brand" href="#">SoftLayer Cluster Manager</a>
-            {% endif %} 
+            {% endif %}
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                 {% if username %}
+                {% if username %}
                 <li><a href="{{ url_for('_dashboard') }}">Dashboard</a></li>
                 <li><a href="{{ url_for('_create_cluster') }}">Create</a></li>
 
-                 {% endif %} 
+                {% endif %}
                 <li><a href="{{ url_for('_about') }}">About</a></li>
             </ul>
-        </div><!--/.nav-collapse -->
+        </div>
+        <!--/.nav-collapse -->
     </div>
 </nav>
 <div class="container">
@@ -71,7 +85,7 @@
         {% if messages %}
         <ul>
             {% for message in messages %}
-            <li>{{ message }} </li>
+            <li>{{ message }}</li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -79,7 +93,8 @@
         {% block content %}{% endblock %}
     </div>
 
-</div><!-- /.container -->
+</div>
+<!-- /.container -->
 
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>

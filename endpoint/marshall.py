@@ -53,6 +53,7 @@ class UserXml(Document):
         return self.email
 
     """Creates a datastore model"""
+
     def CreateUserModel(self, companySubscription):
         user = User.get_or_insert(self.openid)
         user.email = self.email
@@ -120,7 +121,8 @@ class CompanyXml(Document):
         self.name = self.companyXml.getElementsByTagName('name')[0].childNodes[
             0].data
         self.website = \
-        self.companyXml.getElementsByTagName('website')[0].childNodes[0].data
+            self.companyXml.getElementsByTagName('website')[0].childNodes[
+                0].data
 
     def __str__(self):
         return self.name
