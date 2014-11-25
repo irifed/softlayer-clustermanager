@@ -19,7 +19,7 @@ from . import app
 from models.models import Cluster
 from models.sl_config import SLConfig
 from controller.clustermanager import create_cluster, get_master_password, \
-    destroy_cluster
+    destroy_cluster, suspend_cluster, resume_cluster
 from controller.handle_provisioning import get_cluster_status
 from .marshall import EventXml
 from .events import HandleEvent
@@ -301,6 +301,30 @@ def _delete():
     return _dashboard()
 
 
+@app.route('/suspend', methods=['POST', 'GET'])
+def _suspend():
+    if not logged_in():
+        return redirect('/')
+
+    cluster_id = request.args.get('cluster_id')
+
+    suspend_cluster(cluster_id)
+
+    return _dashboard()
+
+
+@app.route('/resume', methods=['POST', 'GET'])
+def _resume():
+    if not logged_in():
+        return redirect('/')
+
+    cluster_id = request.args.get('cluster_id')
+
+    resume_cluster(cluster_id)
+
+    return _dashboard()
+
+
 @app.route('/master_ip', methods=['POST', 'GET'])
 def _master_ip():
     cluster_id = request.args.get('cluster_id')
@@ -350,6 +374,7 @@ def _cluster_stderr():
 
     master_ip, stdout, stderr = get_cluster_status(cluster_id)
     return stderr
+
 
 
 def logged_in():

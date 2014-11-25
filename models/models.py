@@ -76,6 +76,9 @@ class Cluster(db.Model):
 
     cluster_name = db.Column(db.String(100))
 
+    # provisioning, running, paused, destroyed (if we want to keep info about destroyed)
+    cluster_state = db.Column(db.String(100))
+
     def __init__(self, uuid, owner_id, num_workers=5, cpus=4, memory=16384,
                  disk_capacity=100,
                  network_speed=1000,
@@ -86,7 +89,8 @@ class Cluster(db.Model):
                  sl_datacenter='dal06',
                  master_ip='0.0.0.0',
                  master_password='',
-                 cluster_name = "pizza"):
+                 cluster_name='pizza',
+                 cluster_state='provisioning'):
         self.uuid = uuid
         self.owner_id = owner_id
 
@@ -107,6 +111,7 @@ class Cluster(db.Model):
         self.master_password = master_password
 
         self.cluster_name = cluster_name
+        self.cluster_state = cluster_state
 
     @classmethod
     def by_uuid(cls, uuid):

@@ -165,6 +165,30 @@ def async_destroy_cluster(cluster_id):
     # TODO when cluster is destroyed, remove the containing folder
 
 
+def async_suspend_cluster(cluster_id):
+    curdir = vagrantroot + '.' + cluster_id
+    os.chdir(curdir)
+
+    runcommand = 'vagrant suspend'
+    logger.debug(runcommand)
+
+    async_run_process(runcommand, cluster_id)
+
+    # TODO when cluster is suspended, set state in Cluster table
+
+
+def async_resume_cluster(cluster_id):
+    curdir = vagrantroot + '.' + cluster_id
+    os.chdir(curdir)
+
+    runcommand = 'vagrant resume'
+    logger.debug(runcommand)
+
+    async_run_process(runcommand, cluster_id)
+
+    # TODO when cluster is resumed, set state in Cluster table
+
+
 def get_cluster_status(cluster_id):
     cluster_home = vagrantroot + '.' + cluster_id
 
