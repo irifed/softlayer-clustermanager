@@ -84,9 +84,9 @@ def resume_cluster(cluster_id):
     db.session.commit()
 
 
-def get_master_password(cluster_id):
+def get_master_ip_and_password(cluster_id):
     cluster = Cluster.by_uuid(cluster_id)
     if cluster is not None:
-        return cluster.master_password
-    return ''
+        return cluster.master_ip, cluster.master_password
+    return '', ''
 

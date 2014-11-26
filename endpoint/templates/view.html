@@ -7,6 +7,7 @@
     Cluster Name: {{cluster_name}}
 </h1>
 
+<p><b>Cluster State:</b> {{cluster_state}}</p>
 
 <p><b>Master IP:</b> {{master_ip}}</p>
 
@@ -38,6 +39,11 @@
 <p><b>Number of Workers:</b> {{num_workers}}</p>
 
 <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
+{% if cluster_state == 'running' %}
+<a class="btn btn-warning" href="suspend?cluster_id={{cluster_id}}">Suspend</a>
+{% elif cluster_state == 'suspended' %}
+<a class="btn btn-warning" href="resume?cluster_id={{cluster_id}}">Resume</a>
+{% endif %}
 
 <!-- TODO redirect to dashboard after user clicks ok -->
 <a class="btn btn-danger"

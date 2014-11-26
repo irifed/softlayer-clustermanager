@@ -26,14 +26,16 @@
                 <td>
                     {{cluster.cluster_name}}
                 </td>
-                <td>Active</td>
+                <td>{{ cluster.cluster_state }}</td>
                 <td>
                     <a class="btn btn-success" href="view?cluster_id={{cluster.uuid}}">View</a>
                     <a class="btn btn-info" href="cluster_status?cluster_id={{cluster.uuid}}">Logs</a>
 
-                    <!-- TODO display only one of buttons according to state -->
+                    {% if cluster.cluster_state == 'running' %}
                     <a class="btn btn-warning" href="suspend?cluster_id={{cluster.uuid}}">Suspend</a>
+                    {% elif cluster.cluster_state == 'suspended' %}
                     <a class="btn btn-warning" href="resume?cluster_id={{cluster.uuid}}">Resume</a>
+                    {% endif %}
 
                     <a class="btn btn-danger"
                        onclick="return confirm('Are you sure you want to destroy the cluster?')"

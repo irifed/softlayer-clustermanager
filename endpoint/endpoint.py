@@ -18,7 +18,7 @@ import SoftLayer
 from . import app
 from models.models import Cluster
 from models.sl_config import SLConfig
-from controller.clustermanager import create_cluster, get_master_password, \
+from controller.clustermanager import create_cluster, get_master_ip_and_password, \
     destroy_cluster, suspend_cluster, resume_cluster
 from controller.handle_provisioning import get_cluster_status
 from .marshall import EventXml
@@ -274,6 +274,7 @@ def _view():
 
     return render_template('view.html', title='View Cluster',
                            cluster_id=cluster_id,
+                           cluster_state=cluster.cluster_state,
                            username=session["username"],
                            cluster_name=cluster.cluster_name,
                            num_workers=cluster.num_workers,
@@ -329,7 +330,7 @@ def _resume():
 def _master_ip():
     cluster_id = request.args.get('cluster_id')
 
-    master_ip, stdout, stderr = get_cluster_status(cluster_id)
+    master_ip, master_password = get_master_ip_and_password(cluster_id)
 
     return master_ip
 
@@ -338,7 +339,7 @@ def _master_ip():
 def _master_password():
     cluster_id = request.args.get('cluster_id')
 
-    master_password = get_master_password(cluster_id)
+    master_ip, master_password = get_master_ip_and_password(cluster_id)
 
     return master_password
 
@@ -348,7 +349,8 @@ def _cluster_status():
     cluster_id = request.args.get('cluster_id')
 
     master_ip, stdout, stderr = get_cluster_status(cluster_id)
-    master_password = get_master_password(cluster_id)
+
+    master_ip, master_password = get_master_ip_and_password(cluster_id)
 
     # TODO prettify cluster log presentation
     return render_template('cluster_status.html',

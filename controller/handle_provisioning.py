@@ -101,6 +101,10 @@ def run_process(command, cluster_id):
                 print('MASTER IP IS: ' + masterip)
                 store_master_ip_and_password(masterip, cluster_id)
 
+            # hack: this is how we understand that ansible has finished
+            if 'PLAY RECAP' in repr(line):
+                set_cluster_state(cluster_id, 'running')
+
         # Show what we received from standard error.
         while not stderr_queue.empty():
             line = stderr_queue.get()
@@ -255,4 +259,13 @@ def store_master_ip_and_password(master_ip, cluster_id):
         cluster = Cluster.by_uuid(cluster_id)
         cluster.master_ip = master_ip
         cluster.master_password = master_password
+        db.session.commit()
+
+def set_cluster_state(cluster_id, state):
+    logger.debug('setting cluster state {} for id = {}'.format(
+        cluster_id, state
+    ))
+    with app.test_request_context():
+        cluster = Cluster.by_uuid(cluster_id)
+        cluster.cluster_state = state
         db.session.commit()
