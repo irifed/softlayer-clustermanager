@@ -27,7 +27,7 @@
                             $("#login2").text('ssh -i <local path to your SoftLayer private key> root@' + data);
                         });
             },
-            5000);
+            1000);
     setInterval(function () {
                 $.get(
                         $SCRIPT_ROOT + '/master_password?cluster_id={{cluster_id}}',
@@ -36,7 +36,7 @@
                             $("#master_password").text(data);
                         });
             },
-            5000);
+            1000);
     setInterval(function () {
                 $.get(
                         $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
@@ -45,16 +45,16 @@
                             $("#stdout").text(data);
                         });
             },
-            2000);
+            1000);
     setInterval(function () {
                 $.get(
                         $SCRIPT_ROOT + '/cluster_stderr?cluster_id={{cluster_id}}',
                         {},
                         function (data) {
-                            $("#stderr").text(data.result);
+                            $("#stderr").text(data);
                         });
             },
-            5000);
+            1000);
 </script>
 <h3>Cluster provisioning log:</h3>
 <pre id="stdout"></pre>
