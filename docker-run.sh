@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo docker run -t -i -p 8080:5000 \
+sudo docker run -t -i -p 80:5000 \
     -v /opt/vagrant-cluster:/opt/vagrant-cluster \
     -v /var/clusters:/var/clusters \
     -v /opt/appdirect-bdas:/opt/appdirect-bdas \
