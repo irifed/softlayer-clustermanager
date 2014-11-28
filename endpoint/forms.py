@@ -14,8 +14,24 @@ class SLConfigForm(Form):
     num_workers = IntegerField('num_workers', validators=[DataRequired()],
                                default=1)
 
-    # TODO add all datacenters
-    datacenters = [('dal06', 'dal06'), ('sjc01', 'sjc01'), ('ams01', 'ams01')]
+    # ams01,dal01,dal05,dal06,dal09,hkg02,hou02,lon02,mel01,par01,sea01,sjc01,sng01,tor01,wdc01
+    datacenters = [
+        ('ams01', 'ams01'),
+        ('dal01', 'dal01'),
+        ('dal05', 'dal05'),
+        ('dal06', 'dal06'),
+        ('dal09', 'dal09'),
+        ('hkg02', 'hkg02'),
+        ('hou02', 'hou02'),
+        ('lon02', 'lon02'),
+        ('mel01', 'mel01'),
+        ('par01', 'par01'),
+        ('sea01', 'sea01'),
+        ('sng01', 'sng01'),
+        ('sjc01', 'sjc01'),
+        ('tor01', 'tor01'),
+        ('wdc01', 'wdc01')
+        ]
     sl_datacenter = SelectField('sl_datacenter', choices=datacenters,
                                 validators=[DataRequired()], default='dal06')
 
