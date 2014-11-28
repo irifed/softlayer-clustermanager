@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, SelectField, IntegerField
+from wtforms import StringField, SelectField, IntegerField, BooleanField
 from wtforms.validators import DataRequired, Optional
 
 
@@ -37,4 +37,11 @@ class SLConfigForm(Form):
     network_speed = [('10', '10'), ('100', '100'), ('1000', '1000')]
     sl_network_speed = SelectField('sl_network_speed', choices=network_speed,
                                    validators=[DataRequired()], default='100')
+
+    install_spark = BooleanField('install_spark', default=True)
+    install_hadoopmr = BooleanField('install_hadoopmr', default=False)
+    install_hive = BooleanField('install_hive', default=False)
+    install_cassandra = BooleanField('install_cassandra', default=False)
+    install_tachyon = BooleanField('install_tachyon', default=False)
+    install_mpi = BooleanField('install_mpi', default=False)
 

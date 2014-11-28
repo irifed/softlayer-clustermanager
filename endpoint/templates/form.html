@@ -6,6 +6,10 @@
 <h3>SoftLayer User Configuration</h3>
 <form action='' method='post' name='create_cluster'>
 
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <td>
     {{ form.hidden_tag() }}
     <p>Cluster Name
         (required, this is the name you will see on your Cluster
@@ -51,6 +55,22 @@
 
     <p>Network speed: {{ form.sl_network_speed }}
         <br></p>
+
+                </td>
+                <td>
+
+                    <h3> Select software stack components </h3>
+                    <p> {{ form.install_spark }} Spark </p>
+                    <p> {{ form.install_hadoopmr }} Hadoop MapReduce </p>
+                    <p> {{ form.install_hive }} Hive </p>
+                    <p> {{ form.install_cassandra }} Cassandra </p>
+                    <p> {{ form.install_tachyon }} Tachyon </p>
+                    <p> {{ form.install_mpi }} OpenMPI </p>
+
+                </td>
+
+    </tr></table>
+    </div>
 
     <br>
     <!--<p><input type='submit' value='Create cluster'></p>-->

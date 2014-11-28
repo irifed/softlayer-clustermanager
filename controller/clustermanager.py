@@ -18,6 +18,8 @@ def create_cluster(owner_id, sl_config, cluster_name):
     logfile = open('create_cluster.log', 'a')
     logfile.write('Created cluster {}\n'.format(cluster_id))
 
+    # TODO generate vars file for software components selection
+
     cluster = Cluster(
         uuid=cluster_id,
         owner_id=owner_id,
