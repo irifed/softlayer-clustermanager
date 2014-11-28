@@ -23,6 +23,11 @@
 </ul>
 <br>
 
+<!-- TODO display this only if Spark component was selected -->
+<p>
+    <b>Spark Web UI:</b> <a href="http://{{master_ip}}:8080">http://{{master_ip}}:8080</a>
+</p>
+
 
 <p><b>CPUS:</b> {{cpus}}</p>
 
@@ -40,15 +45,11 @@
 
 <a class="btn btn-success" href="dashboard">Dashboard</a>
 <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
-{% if cluster_state == 'running' %}
+{% if cluster_state == 'Running' %}
 <a class="btn btn-warning" href="suspend?cluster_id={{cluster_id}}">Suspend</a>
-{% elif cluster_state == 'suspended' %}
+{% elif cluster_state == 'Suspended' %}
 <a class="btn btn-warning" href="resume?cluster_id={{cluster_id}}">Resume</a>
 {% endif %}
-
-<!-- TODO display only one of buttons according to state -->
-<a class="btn btn-warning" href="suspend?cluster_id={{cluster_id}}">Suspend</a>
-<a class="btn btn-warning" href="resume?cluster_id={{cluster_id}}">Resume</a>
 
 <!-- TODO redirect to dashboard after user clicks ok -->
 <a class="btn btn-danger"

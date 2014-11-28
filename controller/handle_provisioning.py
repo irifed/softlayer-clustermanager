@@ -103,7 +103,7 @@ def run_process(command, cluster_id):
 
             # hack: this is how we understand that ansible has finished
             if 'PLAY RECAP' in repr(line):
-                set_cluster_state(cluster_id, 'running')
+                set_cluster_state(cluster_id, 'Running')
 
         # Show what we received from standard error.
         while not stderr_queue.empty():
