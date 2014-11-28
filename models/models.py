@@ -90,7 +90,7 @@ class Cluster(db.Model):
                  master_ip='0.0.0.0',
                  master_password='',
                  cluster_name='pizza',
-                 cluster_state='provisioning'):
+                 cluster_state='Provisioning'):
         self.uuid = uuid
         self.owner_id = owner_id
 

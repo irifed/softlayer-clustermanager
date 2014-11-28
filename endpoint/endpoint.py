@@ -286,7 +286,8 @@ def _view():
                            sl_domain=cluster.sl_domain,
                            sl_datacenter=cluster.sl_datacenter,
                            master_ip=cluster.master_ip,
-                           master_password=cluster.master_password
+                           master_password=cluster.master_password,
+                           cluster_state=cluster.cluster_state
     )
 
 

@@ -68,7 +68,7 @@ def suspend_cluster(cluster_id):
 
     async_suspend_cluster(cluster_id)
 
-    cluster.cluster_state = 'suspended'
+    cluster.cluster_state = 'Suspended'
     db.session.commit()
 
 
@@ -80,7 +80,7 @@ def resume_cluster(cluster_id):
 
     async_resume_cluster(cluster_id)
 
-    cluster.cluster_state = 'running'
+    cluster.cluster_state = 'Running'
     db.session.commit()
 
 
