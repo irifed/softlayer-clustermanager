@@ -10,7 +10,7 @@ from .handle_provisioning import async_provision_cluster, \
 logger = logging.getLogger("endpoint")
 
 
-def create_cluster(owner_id, sl_config, cluster_name):
+def create_cluster(owner_id, sl_config, components, cluster_name):
     cluster_id = str(uuid.uuid4())
 
     logger.info('Creating cluster id = {}'.format(cluster_id))
@@ -39,12 +39,12 @@ def create_cluster(owner_id, sl_config, cluster_name):
     db.session.add(cluster)
     db.session.commit()
 
-    # # DEBUG
+    # DEBUG
     # cmd = 'sl vs create -y --hourly --datacenter=dal06 --cpu=4 --memory=16384 --os=UBUNTU_LATEST --domain=bdasmarket.irina.com --hostname=controller --wait=86400 --key=irina@ru.ibm.com'
     # p = Popen(cmd, shell=True, bufsize=10000, stdin=PIPE, stdout=logfile, stderr=STDOUT)
-    ## END DEBUG
+    # END DEBUG
 
-    async_provision_cluster(cluster_id, sl_config)
+    async_provision_cluster(cluster_id, sl_config, components)
 
     return cluster_id
 

@@ -142,12 +142,14 @@ def async_run_process(runcommand, cluster_id):
     t.start()
 
 
-def async_provision_cluster(cluster_id, sl_config):
+def async_provision_cluster(cluster_id, sl_config, components):
     curdir = vagrantroot + '.' + cluster_id
     shutil.copytree(cleanrepo, curdir, symlinks=False, ignore=None)
     os.chdir(curdir)
 
     sl_config.create_sl_config_file(curdir + '/sl_config.yml')
+    components.create_components_file(
+        curdir + '/ansible-bdas/group_vars/components.yml')
 
     runcommand = \
         "NUM_WORKERS={} vagrant up --provider=softlayer --no-provision && " \
@@ -260,6 +262,7 @@ def store_master_ip_and_password(master_ip, cluster_id):
         cluster.master_ip = master_ip
         cluster.master_password = master_password
         db.session.commit()
+
 
 def set_cluster_state(cluster_id, state):
     logger.debug('setting cluster state {} for id = {}'.format(

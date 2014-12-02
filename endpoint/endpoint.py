@@ -9,7 +9,6 @@ Largely borrowed from https://github.com/AppDirect/Sample-Python-Application
 import logging
 from xml.dom import minidom
 import traceback
-import sys
 
 import oauth2
 from flask import request, Response, render_template, redirect, flash, session
@@ -18,7 +17,9 @@ import SoftLayer
 from . import app
 from models.models import Cluster
 from models.sl_config import SLConfig
-from controller.clustermanager import create_cluster, get_master_ip_and_password, \
+from models.components import Components
+from controller.clustermanager import create_cluster, \
+    get_master_ip_and_password, \
     destroy_cluster, suspend_cluster, resume_cluster
 from controller.handle_provisioning import get_cluster_status
 from .marshall import EventXml
@@ -43,8 +44,8 @@ def getClient(username, apikey):
 
 # def verifyCredentials():
 # '''Make a trivial api call to SL to verify the username and api key.'''
-#     try:
-#         user = self.client['Account'].getCurrentUser(mask='email')
+# try:
+# user = self.client['Account'].getCurrentUser(mask='email')
 #         return 200, 'SoftLayer credentials ok'
 #     except SoftLayer.exceptions.SoftLayerAPIError as e:
 #         if isAuthProb(e.faultString):  return 403, str(e.faultCode) + ': ' + e.faultString
@@ -67,7 +68,8 @@ def login():
         else:
             apiKey = None
 
-        if (request.method == 'POST') and userName != None and apiKey != None:
+        if (
+                    request.method == 'POST') and userName is not None and apiKey is not None:
 
             # User id and API key have been submitted so now we need to authenticate the user
             # and check for any missing ACLs that might later halt the process.
@@ -79,7 +81,7 @@ def login():
                 user = client['Account'].getCurrentUser(mask='email')
                 useremail = user["email"]
 
-            except SoftLayer.exceptions.SoftLayerAPIError as e:
+            except SoftLayer.exceptions.SoftLayerAPIError:
                 flash("Failed Authentication")
                 return redirect("/")
 
@@ -102,9 +104,9 @@ def login():
         elif request.method == "POST":
             # The user did not specify all the required login information.
             #
-            if ( not userName ):
+            if not userName:
                 msg = ['Please specify your SoftLayer user id.']
-            elif (not apiKey):
+            elif not apiKey:
                 msg = ['Please specify your SoftLayer API Key.']
             else:
                 msg = [
@@ -216,15 +218,23 @@ def _create_cluster():
     form = SLConfigForm()
     if form.validate_on_submit():
         logging.debug('cluster_name={},sl_ssh_key={}, '
-                      'sl_domain={},'
+                      'sl_domain={}, '
                       'sl_datacenter={}, num_workers={}, '
-                      'sl_cpus={}, sl_memory={},'
-                      'sl_disk_capacity={}, sl_network_speed={}'.format(
+                      'sl_cpus={}, sl_memory={}, '
+                      'sl_disk_capacity={}, sl_network_speed={}, '
+                      'install_spark={}, install_mpi={}, '
+                      'install_mapred={}, install_mesos={}, '
+                      'install_hive={}, install_cassandra={}, '
+                      'install_tachyon={}'.format(
             form.cluster_name.data, form.sl_ssh_key.data,
             form.sl_domain.data,
             form.sl_datacenter.data, form.num_workers.data,
             form.sl_cpus.data, form.sl_memory.data,
-            form.sl_disk_capacity.data, form.sl_network_speed.data
+            form.sl_disk_capacity.data, form.sl_network_speed.data,
+            form.install_spark.data, form.install_mpi.data,
+            form.install_mapred.data, form.install_mesos.data,
+            form.install_hive.data, form.install_cassandra.data,
+            form.install_tachyon.data
         ))
 
         # TODO refactor hack with irina's ssh key
@@ -251,7 +261,17 @@ def _create_cluster():
         )
         owner_id = session["username"]
 
-        cluster_id = create_cluster(owner_id, sl_config,
+        components = Components(
+            install_spark=form.install_spark.data,
+            install_mpi=form.install_mpi.data,
+            install_mapred=form.install_mapred.data,
+            install_mesos=form.install_mesos.data,
+            install_hive=form.install_hive.data,
+            install_cassandra=form.install_cassandra.data,
+            install_tachyon=form.install_tachyon.data
+        )
+
+        cluster_id = create_cluster(owner_id, sl_config, components,
                                     form.cluster_name.data)
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
@@ -376,7 +396,6 @@ def _cluster_stderr():
 
     master_ip, stdout, stderr = get_cluster_status(cluster_id)
     return stderr
-
 
 
 def logged_in():

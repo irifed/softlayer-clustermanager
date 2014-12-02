@@ -2,6 +2,7 @@ import logging
 
 from models.models import db
 from models.sl_config import SLConfig
+from models.components import Components
 from controller.clustermanager import create_cluster, destroy_cluster
 
 
@@ -75,7 +76,10 @@ def CreateOrder(event_xml):
         num_workers=5
     )
 
-    cluster_id = create_cluster(owner_id, sl_config)
+    # TODO get components from interactive endpoint
+    components = Components()
+
+    cluster_id = create_cluster(owner_id, sl_config, components, 'clustername')
 
     # return cluster_id, AppDirect will store it as accountIdentifier
     return xml_order_ok.format(cluster_id)

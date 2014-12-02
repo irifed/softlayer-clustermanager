@@ -55,7 +55,8 @@ class SLConfigForm(Form):
                                    validators=[DataRequired()], default='100')
 
     install_spark = BooleanField('install_spark', default=True)
-    install_hadoopmr = BooleanField('install_hadoopmr', default=False)
+    install_mapred = BooleanField('install_mapred', default=False)
+    install_mesos = BooleanField('install_mesos', default=False)
     install_hive = BooleanField('install_hive', default=False)
     install_cassandra = BooleanField('install_cassandra', default=False)
     install_tachyon = BooleanField('install_tachyon', default=False)
