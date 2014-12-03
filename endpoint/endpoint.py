@@ -372,7 +372,6 @@ def _cluster_status():
 
     master_ip, master_password = get_master_ip_and_password(cluster_id)
 
-    # TODO prettify cluster log presentation
     return render_template('cluster_status.html',
                            cluster_id=cluster_id,
                            master_ip=master_ip,

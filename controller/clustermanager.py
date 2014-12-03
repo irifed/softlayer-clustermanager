@@ -15,11 +15,11 @@ def create_cluster(owner_id, sl_config, components, cluster_name):
 
     logger.info('Creating cluster id = {}'.format(cluster_id))
 
-    logfile = open('create_cluster.log', 'a')
-    logfile.write('Created cluster {}\n'.format(cluster_id))
-
-    # TODO generate vars file for software components selection
-
+    # [0] key is always irina's
+    if len(sl_config.sl_ssh_keys) > 1:
+        sl_ssh_key = sl_config.sl_ssh_keys[1]
+    else:
+        sl_ssh_key = ''
     cluster = Cluster(
         uuid=cluster_id,
         owner_id=owner_id,
@@ -32,7 +32,8 @@ def create_cluster(owner_id, sl_config, components, cluster_name):
 
         sl_username=sl_config.sl_username,
         sl_api_key=sl_config.sl_api_key,
-        # TODO sl_ssh_keys
+        sl_ssh_key=sl_ssh_key,
+
         sl_domain=sl_config.sl_domain,
         sl_datacenter=sl_config.sl_datacenter
     )
