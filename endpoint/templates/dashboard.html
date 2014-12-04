@@ -38,11 +38,13 @@
                     <a class="btn btn-success" href="view?cluster_id={{cluster.uuid}}">View</a>
                     <a class="btn btn-info" href="cluster_status?cluster_id={{cluster.uuid}}">Logs</a>
 
+                    <!-- disable suspend button
                     {% if cluster.cluster_state == 'Running' %}
                     <a class="btn btn-warning" href="suspend?cluster_id={{cluster.uuid}}">Suspend</a>
                     {% elif cluster.cluster_state == 'Suspended' %}
                     <a class="btn btn-warning" href="resume?cluster_id={{cluster.uuid}}">Resume</a>
                     {% endif %}
+                    -->
 
                     <a class="btn btn-danger"
                        onclick="return confirm('Are you sure you want to destroy the cluster?')"

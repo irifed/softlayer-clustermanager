@@ -45,11 +45,14 @@
 
 <a class="btn btn-success" href="dashboard">Dashboard</a>
 <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
+
+<!-- disable suspend button
 {% if cluster_state == 'Running' %}
 <a class="btn btn-warning" href="suspend?cluster_id={{cluster_id}}">Suspend</a>
 {% elif cluster_state == 'Suspended' %}
 <a class="btn btn-warning" href="resume?cluster_id={{cluster_id}}">Resume</a>
 {% endif %}
+-->
 
 <!-- TODO redirect to dashboard after user clicks ok -->
 <a class="btn btn-danger"
