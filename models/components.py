@@ -14,12 +14,12 @@ class Components:
     def create_components_file(self, filepath):
         f = open(filepath, 'w')
 
-        f.write('install_spark: {}\n'.format(self.install_spark))
-        f.write('install_mpi: {}\n'.format(self.install_mpi))
-        f.write('install_hive: {}\n'.format(self.install_hive))
-        f.write('install_mesos: {}\n'.format(self.install_mesos))
-        f.write('install_mapred: {}\n'.format(self.install_mapred))
-        f.write('install_tachyon: {}\n'.format(self.install_tachyon))
-        f.write('install_cassandra: {}\n'.format(self.install_cassandra))
+        f.write('install_spark: {}\n'.format(str(self.install_spark).lower()))
+        f.write('install_mpi: {}\n'.format(str(self.install_mpi).lower()))
+        f.write('install_hive: {}\n'.format(str(self.install_hive).lower()))
+        f.write('install_mesos: {}\n'.format(str(self.install_mesos).lower()))
+        f.write('install_mapred: {}\n'.format(str(self.install_mapred).lower()))
+        f.write('install_tachyon: {}\n'.format(str(self.install_tachyon).lower()))
+        f.write('install_cassandra: {}\n'.format(str(self.install_cassandra).lower()))
 
         f.close()
