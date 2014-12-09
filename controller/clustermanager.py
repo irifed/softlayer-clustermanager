@@ -52,8 +52,6 @@ def create_cluster(owner_id, sl_config, components, cluster_name):
 
 def destroy_cluster(cluster_id):
     logger.info('Destroying cluster id = {}'.format(cluster_id))
-    logfile = open('create_cluster.log', 'a')
-    logfile.write('Destroyed cluster {}\n'.format(cluster_id))
 
     async_destroy_cluster(cluster_id)
 
