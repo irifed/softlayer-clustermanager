@@ -5,8 +5,8 @@ pushd /opt/vagrant-cluster
 git submodule foreach git pull origin master
 popd
 
-# pull changes to appdirect-bdas
-pushd /opt/appdirect-bdas
+# pull changes to softlayer-clustermanager
+pushd /opt/softlayer-clustermanager
 git pull origin master
 popd
 

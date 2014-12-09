@@ -24,7 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.network "forwarded_port", guest: 8080, host: 8080
 
-    config.vm.synced_folder "/Users/irina/Projects/github/irifed/appdirect-bdas", "/opt/appdirect-bdas"
+    config.vm.synced_folder "/Users/irina/Projects/github/irifed/softlayer-clustermanager", "/opt/softlayer-clustermanager"
 
     config.vm.provider "virtualbox" do |vb|
         vb.name = "dockerhost"
