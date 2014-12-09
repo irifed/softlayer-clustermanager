@@ -27,7 +27,7 @@ from .events import HandleEvent
 from .forms import SLConfigForm
 
 
-logger = logging.getLogger("endpoint")
+logger = logging.getLogger("views")
 
 event_url_template = 'https://www.appdirect.com/api/integration/v1/events/{}'
 

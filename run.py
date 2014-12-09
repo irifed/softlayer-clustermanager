@@ -5,7 +5,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
-from endpoint import app
+from views import app
 from models.models import db
 
 logging.basicConfig(
@@ -14,7 +14,7 @@ logging.basicConfig(
 
 logging.getLogger('SoftLayer').setLevel(logging.WARNING)
 
-logger = logging.getLogger('endpoint')
+logger = logging.getLogger('views')
 logger.setLevel(level=logging.DEBUG)
 
 

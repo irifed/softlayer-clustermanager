@@ -7,7 +7,7 @@ from .handle_provisioning import async_provision_cluster, \
     async_destroy_cluster, async_suspend_cluster, async_resume_cluster
 
 
-logger = logging.getLogger("endpoint")
+logger = logging.getLogger("views")
 
 
 def create_cluster(owner_id, sl_config, components, cluster_name):

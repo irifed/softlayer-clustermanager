@@ -12,7 +12,7 @@ import time
 
 import SoftLayer
 
-from endpoint import app
+from views import app
 from models.models import db, Cluster
 
 

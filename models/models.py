@@ -8,7 +8,7 @@
 """
 
 import logging
-logger = logging.getLogger("endpoint")
+logger = logging.getLogger("views")
 
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()

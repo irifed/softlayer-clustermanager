@@ -6,7 +6,7 @@ from models.components import Components
 from controller.clustermanager import create_cluster, destroy_cluster
 
 
-logger = logging.getLogger("endpoint")
+logger = logging.getLogger("views")
 
 xml_order_ok = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <result>
