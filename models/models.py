@@ -14,14 +14,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
-class CompanySubscription(db.Model):
-    __tablename__ = 'CompanySubscription'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edition = db.Column(db.String(100))
-    name = db.Column(db.String(200))
-    website = db.Column(db.String(1200))
-
-
 class User(db.Model):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -41,15 +33,6 @@ class User(db.Model):
         if user is None:
             user = User()
         return user
-
-
-class Event(db.Model):
-    __tablename__ = 'Event'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date = db.Column(db.DateTime)
-    token = db.Column(db.String(100))
-    status = db.Column(db.String(100))
-    result = db.Column(db.String(100))
 
 
 class Cluster(db.Model):

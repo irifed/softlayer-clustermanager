@@ -7,11 +7,9 @@ Largely borrowed from https://github.com/AppDirect/Sample-Python-Application
 """
 
 import logging
-from xml.dom import minidom
 import traceback
 
-import oauth2
-from flask import request, Response, render_template, redirect, flash, session
+from flask import request, render_template, redirect, flash, session
 import SoftLayer
 
 from . import app
@@ -22,18 +20,10 @@ from controller.clustermanager import create_cluster, \
     get_master_ip_and_password, \
     destroy_cluster, suspend_cluster, resume_cluster
 from controller.handle_provisioning import get_cluster_status
-from .marshall import EventXml
-from .events import HandleEvent
 from .forms import SLConfigForm
 
 
 logger = logging.getLogger("views")
-
-event_url_template = 'https://www.appdirect.com/api/integration/v1/events/{}'
-
-# AppDirect credentials
-consumer_key = 'bdas-cluster-15877'
-consumer_secret = 'PMBysgKaJtWZrOiq'
 
 
 def getClient(username, apikey):
@@ -41,15 +31,6 @@ def getClient(username, apikey):
     return SoftLayer.Client(username=username, api_key=apikey,
                             endpoint_url=SoftLayer.API_PUBLIC_ENDPOINT)
 
-
-# def verifyCredentials():
-# '''Make a trivial api call to SL to verify the username and api key.'''
-# try:
-# user = self.client['Account'].getCurrentUser(mask='email')
-#         return 200, 'SoftLayer credentials ok'
-#     except SoftLayer.exceptions.SoftLayerAPIError as e:
-#         if isAuthProb(e.faultString):  return 403, str(e.faultCode) + ': ' + e.faultString
-#         else:  return 502, str(e.faultCode) + ': ' + e.faultString
 
 @app.route("/")
 def index():
@@ -132,54 +113,6 @@ def logout():
     session.pop('apikey', None)
     session.pop("useremail")
     return redirect('/')
-
-
-@app.route('/login', methods=['POST', 'GET'])
-def _login():
-    logging.debug('request.args={}'.format(request.args))
-
-    openid = request.args.get('openid')
-
-    # remove url beginning from openid, leave uuid
-    openid = openid.split('/')[-1]
-
-    account_id = request.args.get('accountIdentifier')
-    cluster = Cluster.by_openid(openid)
-    return "openid = {}, cluster = {}".format(openid, cluster)
-
-
-@app.route('/event', methods=['POST', 'GET'])
-def _event():
-    logging.debug('request.args = {}'.format(request.args))
-
-    # TODO guard by try..catch
-    token = request.args.get('token')
-    logging.debug('token = {}'.format(token))
-
-    # set up OAuth client
-    consumer = oauth2.Consumer(consumer_key, consumer_secret)
-    client = oauth2.Client(consumer)
-
-    # fetch event info from REST API by `token`
-    # see docs at http://info.appdirect.com/developers/docs/api_integration/subscription_management/subscription_order_event
-    event_url = event_url_template.format(token)
-    response, content = client.request(event_url)
-
-    # parse xml response
-    if int(response['status']) == 200:
-        xml_document = minidom.parseString(content)
-        event_xml = EventXml(xml_document)
-
-        logging.debug(event_xml.prettyPrint)
-
-        # handle event: create order
-        xml_response = HandleEvent(event_xml)
-    else:
-        xml_response = content
-
-    logging.debug('xml_response=\n{}\n'.format(xml_response))
-
-    return Response(xml_response, mimetype='text/xml')
 
 
 @app.route('/dashboard', methods=['POST', 'GET'])

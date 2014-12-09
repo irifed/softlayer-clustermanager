@@ -1,4 +1,7 @@
 class Components:
+    """
+    Class for storing selectable software components
+    """
     def __init__(self, install_spark=True, install_mpi=False,
                  install_hive=False, install_mesos=False, install_mapred=False,
                  install_tachyon=False, install_cassandra=False):
