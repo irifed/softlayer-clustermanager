@@ -4,7 +4,7 @@ import uuid
 
 from models.models import db, Cluster
 from .handle_provisioning import async_provision_cluster, \
-    async_destroy_cluster, async_suspend_cluster, async_resume_cluster
+    async_destroy_cluster
 
 
 logger = logging.getLogger("views")
@@ -58,30 +58,6 @@ def destroy_cluster(cluster_id):
     logger.debug('removing cluster {} from table Cluster'.format(cluster_id))
     cluster = Cluster.by_uuid(cluster_id)
     db.session.delete(cluster)
-    db.session.commit()
-
-
-def suspend_cluster(cluster_id):
-    logger.info('Suspending cluster id = {}'.format(cluster_id))
-    cluster = Cluster.by_uuid(cluster_id)
-
-    # TODO check if cluster is running
-
-    async_suspend_cluster(cluster_id)
-
-    cluster.cluster_state = 'Suspended'
-    db.session.commit()
-
-
-def resume_cluster(cluster_id):
-    logger.info('Resuming cluster id = {}'.format(cluster_id))
-    cluster = Cluster.by_uuid(cluster_id)
-
-    # TODO check if cluster is suspended
-
-    async_resume_cluster(cluster_id)
-
-    cluster.cluster_state = 'Running'
     db.session.commit()
 
 

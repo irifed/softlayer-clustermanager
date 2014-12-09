@@ -17,8 +17,7 @@ from models.models import Cluster
 from models.sl_config import SLConfig
 from models.components import Components
 from controller.clustermanager import create_cluster, \
-    get_master_ip_and_password, \
-    destroy_cluster, suspend_cluster, resume_cluster
+    get_master_ip_and_password, destroy_cluster
 from controller.handle_provisioning import get_cluster_status
 from .forms import SLConfigForm
 
@@ -251,30 +250,6 @@ def _delete():
     cluster_id = request.args.get('cluster_id')
 
     destroy_cluster(cluster_id)
-
-    return _dashboard()
-
-
-@app.route('/suspend', methods=['POST', 'GET'])
-def _suspend():
-    if not logged_in():
-        return redirect('/')
-
-    cluster_id = request.args.get('cluster_id')
-
-    suspend_cluster(cluster_id)
-
-    return _dashboard()
-
-
-@app.route('/resume', methods=['POST', 'GET'])
-def _resume():
-    if not logged_in():
-        return redirect('/')
-
-    cluster_id = request.args.get('cluster_id')
-
-    resume_cluster(cluster_id)
 
     return _dashboard()
 
