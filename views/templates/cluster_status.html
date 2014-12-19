@@ -41,7 +41,11 @@
                         $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
                         {},
                         function (data) {
+                            var tempScrollTop = $(window).scrollTop();
                             $("#stdout").text(data);
+                            //setTimeout(function() {
+                                $(window).scrollTop(tempScrollTop);
+                            //}, 25);
                         });
             },
             5000);
