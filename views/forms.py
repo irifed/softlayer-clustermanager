@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms import StringField, SelectField, IntegerField, BooleanField
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, InputRequired
 
 
 class SLConfigForm(Form):
@@ -11,7 +11,7 @@ class SLConfigForm(Form):
 
     sl_domain = StringField('sl_domain', validators=[DataRequired()])
 
-    num_workers = IntegerField('num_workers', validators=[DataRequired()],
+    num_workers = IntegerField('num_workers', validators=[InputRequired()],
                                default=1)
 
     # ams01,dal01,dal05,dal06,dal09,hkg02,hou02,lon02,mel01,par01,sea01,sjc01,sng01,tor01,wdc01
