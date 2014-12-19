@@ -21,6 +21,10 @@ RUN wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.6.5_x86_64.deb
 RUN dpkg -i vagrant_1.6.5_x86_64.deb
 RUN vagrant plugin install vagrant-softlayer
 
+# Patch Vagrant to disable color in ansible log
+WORKDIR /opt/vagrant/embedded/gems/gems/vagrant-1.6.5/plugins/provisioners/ansible
+RUN sed -i s/'"ANSIBLE_FORCE_COLOR" => "true",'/'"ANSIBLE_FORCE_COLOR" => "false",'/ provisioner.rb
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
