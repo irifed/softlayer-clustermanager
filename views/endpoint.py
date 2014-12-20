@@ -208,8 +208,8 @@ def _create_cluster():
 
         return redirect('/cluster_status?cluster_id={}'.format(cluster_id))
 
-    else:
-        flash("Please correct errors")
+    #else:
+    #    flash("Please correct errors")
 
     return render_template('form.html', title='Create Cluster', form=form,
                            username=session["username"])
