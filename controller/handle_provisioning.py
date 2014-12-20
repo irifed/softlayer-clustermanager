@@ -9,6 +9,7 @@ import subprocess
 import collections
 from queue import Queue
 import time
+import traceback
 
 import SoftLayer
 
@@ -91,27 +92,33 @@ def run_process(command, cluster_id):
     while not stdout_reader.eof() or not stderr_reader.eof():
         # Show what we received from standard output.
         while not stdout_queue.empty():
-            line = stdout_queue.get()
-            line = line.decode(encoding='UTF-8')
-            print('STDOUT: {}\n'.format(repr(line)))
-            outf.write(line)
-            outf.flush()
-            if 'master: SSH address:' in repr(line):
-                masterip = extract_master_ip(line)
-                print('MASTER IP IS: ' + masterip)
-                store_master_ip_and_password(masterip, cluster_id)
+            try:
+                line = stdout_queue.get().decode(encoding='ascii', errors='ignore')
+                print('STDOUT: {}\n'.format(repr(line)))
+                outf.write(line)
+                outf.flush()
+                if 'master: SSH address:' in repr(line):
+                    masterip = extract_master_ip(line)
+                    print('MASTER IP IS: ' + masterip)
+                    store_master_ip_and_password(masterip, cluster_id)
 
-            # hack: this is how we understand that ansible has finished
-            if 'PLAY RECAP' in repr(line):
-                set_cluster_state(cluster_id, 'Running')
+                # hack: this is how we understand that ansible has finished
+                if 'PLAY RECAP' in repr(line):
+                    set_cluster_state(cluster_id, 'Running')
+            except Exception:
+               print(traceback.format_exc())
+               print('Moving on...')
 
         # Show what we received from standard error.
         while not stderr_queue.empty():
-            line = stderr_queue.get()
-            line = line.decode(encoding='UTF-8')
-            print('STDERR: {}\n'.format(repr(line)))
-            errf.write(line)
-            errf.flush()
+            try:
+                line = stdout_queue.get().decode(encoding='ascii', errors='ignore')
+                print('STDERR: {}\n'.format(repr(line)))
+                errf.write(line)
+                errf.flush()
+            except Exception:
+                print(traceback.format_exc())
+                print('Moving on...')
 
         # Sleep a bit before asking the readers again.
         time.sleep(2)
