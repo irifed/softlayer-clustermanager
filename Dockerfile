@@ -13,7 +13,7 @@ RUN pip install ansible
 # The rest of our app works under Python 3
 RUN pip3 install SoftLayer
 RUN pip3 install Flask Flask-OpenID gunicorn Flask-SQLAlchemy \
-                 python-oauth2 pyzmq tornado WTForms flask-wtf tornado
+                 python-oauth2 pyzmq tornado WTForms flask-wtf
 
 # Install Vagrant
 WORKDIR /tmp
