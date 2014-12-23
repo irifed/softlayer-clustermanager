@@ -22,7 +22,7 @@ from controller.handle_provisioning import get_cluster_status
 from .forms import SLConfigForm
 
 
-logger = logging.getLogger("views")
+logger = logging.getLogger('clustermanager')
 
 
 def getClient(username, apikey):

@@ -17,10 +17,7 @@ from views import app
 from models.models import db, Cluster
 
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s: %(levelname)s: %(filename)s: %(funcName)s(): %(message)s')
-logger = logging.getLogger("handle_provisioning")
-
+logger = logging.getLogger('clustermanager')
 
 # # git clone --recursive https://github.com/irifed/vagrant-cluster.git cleanrepo
 cleanrepo = '/opt/vagrant-cluster'
@@ -32,6 +29,10 @@ def extract_master_ip(output):
         'master: SSH address: ([0-9]+(?:\.[0-9]+){3})',
         output).groups()[0]
     return master_ip
+
+
+def remove_cluster_dir(cluster_id):
+    shutil.rmtree(vagrantroot + '.' + cluster_id)
 
 
 # borrowed from https://gist.github.com/soxofaan/9217628
@@ -78,7 +79,6 @@ def run_process(command, cluster_id):
                                shell=True)
     outf = open('vagrant.out', 'w+')
     errf = open('vagrant.err', 'w+')
-    masterip = None
 
     # Launch the asynchronous readers of the process' stdout and stderr.
     stdout_queue = Queue()
@@ -97,6 +97,7 @@ def run_process(command, cluster_id):
                 print('STDOUT: {}\n'.format(repr(line)))
                 outf.write(line)
                 outf.flush()
+
                 if 'master: SSH address:' in repr(line):
                     masterip = extract_master_ip(line)
                     print('MASTER IP IS: ' + masterip)
@@ -105,6 +106,7 @@ def run_process(command, cluster_id):
                 # hack: this is how we understand that ansible has finished
                 if 'PLAY RECAP' in repr(line):
                     set_cluster_state(cluster_id, 'Running')
+
             except Exception:
                print(traceback.format_exc())
                print('Moving on...')
@@ -123,6 +125,9 @@ def run_process(command, cluster_id):
         # Sleep a bit before asking the readers again.
         time.sleep(2)
 
+    # we are in thread, so it's okay to block
+    rc = process.wait()
+
     # Let's be tidy and join the threads we've started.
     stdout_reader.join()
     stderr_reader.join()
@@ -134,7 +139,9 @@ def run_process(command, cluster_id):
     outf.close()
     errf.close()
 
-    return masterip
+    # at this point we know that vagrant is finished
+    if command == 'vagrant destroy -f':
+        remove_cluster_dir(cluster_id)
 
 
 def async_run_process(runcommand, cluster_id):
@@ -143,8 +150,7 @@ def async_run_process(runcommand, cluster_id):
     """
 
     process_args = (runcommand, cluster_id)
-    t = threading.Thread(target=run_process, name='cucumber',
-                         args=process_args)
+    t = threading.Thread(target=run_process, args=process_args)
     t.daemon = False
     t.start()
 
@@ -253,5 +259,7 @@ def set_cluster_state(cluster_id, state):
     ))
     with app.test_request_context():
         cluster = Cluster.by_uuid(cluster_id)
+
+        # TODO if cluster is not found, it probably was deleted during provisioning, so need to destroy it
         cluster.cluster_state = state
         db.session.commit()

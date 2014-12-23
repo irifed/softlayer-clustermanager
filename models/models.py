@@ -8,7 +8,7 @@
 """
 
 import logging
-logger = logging.getLogger("views")
+logger = logging.getLogger('clustermanager')
 
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
