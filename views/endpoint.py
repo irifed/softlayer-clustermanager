@@ -280,8 +280,13 @@ def _cluster_status():
 
     master_ip, master_password = get_master_ip_and_password(cluster_id)
 
+    cluster = Cluster.by_uuid(cluster_id)
+    refresh_interval = 1000
+
     return render_template('cluster_status.html',
                            cluster_id=cluster_id,
+                           cluster_state=cluster.cluster_state,
+                           refresh_interval=refresh_interval,
                            master_ip=master_ip,
                            master_password=master_password,
                            stdout=stdout,

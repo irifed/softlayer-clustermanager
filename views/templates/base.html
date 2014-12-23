@@ -25,6 +25,8 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     {% if username %}
     <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{ url_for('_about') }}">About</a></li>
+        <li><a href="https://github.com/irifed/softlayer-clustermanager-issues/issues">Report an issue</a></li>
 
         <li class="dropdown">
             <a class="dropdown-toggle userid" data-toggle="dropdown" href="#">
@@ -59,11 +61,9 @@
             <ul class="nav navbar-nav">
                 {% if username %}
                 <li><a href="{{ url_for('_dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('_create_cluster') }}">Create</a></li>
+                <li><a href="{{ url_for('_create_cluster') }}">Create new cluster</a></li>
 
                 {% endif %}
-                <li><a href="{{ url_for('_about') }}">About</a></li>
-                <li><a href="https://github.com/irifed/softlayer-clustermanager-issues/issues">Report an issue</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->

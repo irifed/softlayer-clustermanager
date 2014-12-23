@@ -3,50 +3,52 @@
 
 {% block content %}
 
-<h1>
-    Cluster Name: {{cluster_name}}
-</h1>
+    <h1>
+        Cluster Name: {{cluster_name}}
+    </h1>
 
-<p><b>Cluster State:</b> {{cluster_state}}</p>
+    <p><b>Cluster State:</b> {{cluster_state}}</p>
 
-<p><b>Master IP:</b> {{master_ip}}</p>
+    <p><b>Master IP:</b> {{master_ip}}</p>
 
-<p><b>Master Password:</b> {{master_password }}</p>
+    <p><b>Master Password:</b> {{master_password }}</p>
 
-<p>You can login to master node using one of the following commands: </p>
-<ul>
-    <li>With password (listed above):
-        <pre>ssh root@{{master_ip}}</pre>
-    <li>With SSH key (if you entered its name during provisioning):
-    <pre>ssh -i &lt;local path to your SoftLayer private key&gt; root@{{master_ip}}</pre>
-    </li>
-</ul>
-<br>
+    <p>You can login to master node using one of the following commands: </p>
+    <ul>
+        <li>With password (listed above):
+            <pre>ssh root@{{master_ip}}</pre>
+        <li>With SSH key (if you entered its name during provisioning):
+            <pre>ssh -i &lt;local path to your SoftLayer private key&gt; root@{{master_ip}}</pre>
+        </li>
+    </ul>
+    <br>
 
-<!-- TODO display this only if Spark component was selected -->
-<p>
-    <b>Spark Web UI:</b> <a href="http://{{master_ip}}:8080">http://{{master_ip}}:8080</a>
-</p>
+    <!-- TODO display this only if Spark component was selected -->
+    <p>
+        <b>Spark Web UI:</b> <a href="http://{{master_ip}}:8080">http://{{master_ip}}:8080</a>
+    </p>
 
 
-<p><b>CPUS:</b> {{cpus}}</p>
+    <p><b>CPUS:</b> {{cpus}}</p>
 
-<p><b>Memory:</b> {{memory}}</p>
+    <p><b>Memory:</b> {{memory}}</p>
 
-<p><b>Disk Capacity:</b> {{disk_capacity}}</p>
+    <p><b>Disk Capacity:</b> {{disk_capacity}}</p>
 
-<p><b>Network Speed:</b> {{network_speed}}</p>
+    <p><b>Network Speed:</b> {{network_speed}}</p>
 
-<p><b>SoftLayer SSH Key:</b> {{sl_ssh_key}}</p>
+    <p><b>SoftLayer SSH Key:</b> {{sl_ssh_key}}</p>
 
-<p><b>SoftLayer Domain:</b> {{sl_domain}}</p>
+    <p><b>SoftLayer Datacenter:</b> {{sl_datacenter}}</p>
 
-<p><b>Number of Workers:</b> {{num_workers}}</p>
+    <p><b>SoftLayer Domain:</b> {{sl_domain}}</p>
 
-<a class="btn btn-success" href="dashboard">Dashboard</a>
-<a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
+    <p><b>Number of Workers:</b> {{num_workers}}</p>
 
-<!-- disable suspend button
+    <a class="btn btn-success" href="dashboard">Dashboard</a>
+    <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>
+
+    <!-- disable suspend button
 {% if cluster_state == 'Running' %}
 <a class="btn btn-warning" href="suspend?cluster_id={{cluster_id}}">Suspend</a>
 {% elif cluster_state == 'Suspended' %}
@@ -54,9 +56,9 @@
 {% endif %}
 -->
 
-<!-- TODO redirect to dashboard after user clicks ok -->
-<a class="btn btn-danger"
-   href="delete?cluster_id={{cluster_id}}"
-   onclick="return confirm('Are you sure you want to destroy the cluster?')">Delete</a>
+    <!-- TODO redirect to dashboard after user clicks ok -->
+    <a class="btn btn-danger"
+       href="delete?cluster_id={{cluster_id}}"
+       onclick="return confirm('Are you sure you want to destroy the cluster?')">Delete</a>
 
 {% endblock %}

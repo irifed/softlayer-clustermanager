@@ -16,48 +16,70 @@
 </ul>
 <br>
 <script>
-    setInterval(function () {
-                $.get(
-                        $SCRIPT_ROOT + '/master_ip?cluster_id={{cluster_id}}',
-                        {},
-                        function (data) {
-                            $("#master_ip").text(data);
-                            $("#login1").text('ssh root@' + data);
-                            $("#login2").text('ssh -i <local path to your SoftLayer private key> root@' + data);
-                        });
-            },
-            5000);
-    setInterval(function () {
-                $.get(
-                        $SCRIPT_ROOT + '/master_password?cluster_id={{cluster_id}}',
-                        {},
-                        function (data) {
-                            $("#master_password").text(data);
-                        });
-            },
-            5000);
-    setInterval(function () {
-                $.get(
-                        $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
-                        {},
-                        function (data) {
-                            var tempScrollTop = $(window).scrollTop();
-                            $("#stdout").text(data);
-                            //setTimeout(function() {
-                                $(window).scrollTop(tempScrollTop);
-                            //}, 25);
-                        });
-            },
-            5000);
-    setInterval(function () {
-                $.get(
-                        $SCRIPT_ROOT + '/cluster_stderr?cluster_id={{cluster_id}}',
-                        {},
-                        function (data) {
-                            $("#stderr").text(data);
-                        });
-            },
-            5000);
+
+    var refreshMasterIp = function () {
+        $.get(
+                $SCRIPT_ROOT + '/master_ip?cluster_id={{cluster_id}}',
+                {},
+                function (data) {
+                    $("#master_ip").text(data);
+                    $("#login1").text('ssh root@' + data);
+                    $("#login2").text('ssh -i <local path to your SoftLayer private key> root@' + data);
+                    var clst = "{{ cluster_state }}";
+                    if (clst == "Running") {
+                        clearInterval(masterip_interval);
+                    }
+                }
+        );
+    };
+
+    var refreshMasterPassword = function () {
+        $.get(
+                $SCRIPT_ROOT + '/master_password?cluster_id={{cluster_id}}',
+                {},
+                function (data) {
+                    $("#master_password").text(data);
+                    var clst = "{{ cluster_state }}";
+                    if (clst == "Running") {
+                        clearInterval(masterpass_interval);
+                    }
+                });
+    };
+
+    var refreshStdout = function () {
+        $.get(
+                $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
+                {},
+                function (data) {
+                    var tempScrollTop = $(window).scrollTop();
+                    $("#stdout").text(data);
+                    //setTimeout(function() {
+                    $(window).scrollTop(tempScrollTop);
+                    //}, 25);
+                    var clst = "{{ cluster_state }}";
+                    if (clst == "Running") {
+                        clearInterval(stdout_interval);
+                    }
+                });
+    };
+
+    var refreshStderr = function () {
+        $.get(
+                $SCRIPT_ROOT + '/cluster_stderr?cluster_id={{cluster_id}}',
+                {},
+                function (data) {
+                    $("#stderr").text(data);
+                    var clst = "{{ cluster_state }}";
+                    if (clst == "Running") {
+                        clearInterval(stderr_interval);
+                    }
+                });
+    };
+
+    var masterip_interval = setInterval(refreshMasterIp, {{ refresh_interval }});
+    var masterpass_interval = setInterval(refreshMasterPassword, {{ refresh_interval }});
+    var stdout_interval = setInterval(refreshStdout, {{ refresh_interval }});
+    var stderr_interval = setInterval(refreshStderr, {{ refresh_interval }});
 </script>
 <h3>Cluster provisioning log:</h3>
 <pre id="stdout"></pre>
