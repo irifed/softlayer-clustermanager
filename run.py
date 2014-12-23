@@ -18,7 +18,7 @@ logging.getLogger('SoftLayer').setLevel(logging.WARNING)
 logger = logging.getLogger('clustermanager')
 logger.setLevel(level=logging.DEBUG)
 
-logfh = logging.FileHandler('clustermanager.log')
+logfh = logging.FileHandler('/var/logs/clustermanager.log')
 logfh.setFormatter(logging.Formatter(format))
 logger.addHandler(logfh)
 
