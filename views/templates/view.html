@@ -23,12 +23,12 @@
     </ul>
     <br>
 
-    <!-- TODO display this only if Spark component was selected -->
+    {% if components.install_spark %}
     <p>
         <b>Spark Web UI:</b> <a href="http://{{master_ip}}:8080">http://{{master_ip}}:8080</a>
     </p>
-
-
+    {% endif %}
+    
     <p><b>CPUS:</b> {{cpus}}</p>
 
     <p><b>Memory:</b> {{memory}}</p>
@@ -44,6 +44,17 @@
     <p><b>SoftLayer Domain:</b> {{sl_domain}}</p>
 
     <p><b>Number of Workers:</b> {{num_workers}}</p>
+    
+    <p>
+        <b>Installed Software:</b>
+        <ul>
+            {% for key, val in components.__dict__.items() %}
+                {% if val %}
+                    <li>{{ key[8:].title() }}</li>
+                {% endif%}
+            {% endfor %}
+        </ul>
+    </p>
 
     <a class="btn btn-success" href="dashboard">Dashboard</a>
     <a class="btn btn-info" href="cluster_status?cluster_id={{cluster_id}}">Logs</a>

@@ -53,6 +53,7 @@
                 function (data) {
                     var tempScrollTop = $(window).scrollTop();
                     $("#stdout").text(data);
+                    $("#stdout").scrollTop($("#stdout").prop("scrollHeight"));
                     //setTimeout(function() {
                     $(window).scrollTop(tempScrollTop);
                     //}, 25);
