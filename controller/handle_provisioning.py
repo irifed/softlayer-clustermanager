@@ -264,6 +264,5 @@ def set_cluster_state(cluster_id, state):
     with app.test_request_context():
         cluster = Cluster.by_uuid(cluster_id)
 
-        # TODO if cluster is not found, it probably was deleted during provisioning, so need to destroy it
         cluster.cluster_state = state
         db.session.commit()

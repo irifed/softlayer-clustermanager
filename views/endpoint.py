@@ -296,6 +296,12 @@ def _cluster_status():
                            stderr=stderr,
                            username=session["username"])
 
+@app.route('/cluster_status_only', methods=['POST', 'GET'])
+def _cluster_status_only():
+    cluster_id = request.args.get('cluster_id')
+    cluster = Cluster.by_uuid(cluster_id)
+    return cluster.cluster_state
+    
 
 @app.route('/cluster_stdout', methods=['POST', 'GET'])
 def _cluster_stdout():
