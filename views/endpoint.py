@@ -8,6 +8,7 @@ Largely borrowed from https://github.com/AppDirect/Sample-Python-Application
 
 import logging
 import traceback
+import pickle
 
 from flask import request, render_template, redirect, flash, session
 import SoftLayer
@@ -223,6 +224,7 @@ def _view():
     cluster_id = request.args.get('cluster_id')
 
     cluster = Cluster.by_uuid(cluster_id)
+    components = pickle.loads(cluster.components)
 
     return render_template('view.html', title='View Cluster',
                            cluster_id=cluster_id,
@@ -238,7 +240,8 @@ def _view():
                            sl_domain=cluster.sl_domain,
                            sl_datacenter=cluster.sl_datacenter,
                            master_ip=cluster.master_ip,
-                           master_password=cluster.master_password
+                           master_password=cluster.master_password,
+                           components=components
     )
 
 
@@ -293,6 +296,12 @@ def _cluster_status():
                            stderr=stderr,
                            username=session["username"])
 
+@app.route('/cluster_status_only', methods=['POST', 'GET'])
+def _cluster_status_only():
+    cluster_id = request.args.get('cluster_id')
+    cluster = Cluster.by_uuid(cluster_id)
+    return cluster.cluster_state
+    
 
 @app.route('/cluster_stdout', methods=['POST', 'GET'])
 def _cluster_stdout():

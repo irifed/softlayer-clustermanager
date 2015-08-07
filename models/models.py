@@ -6,7 +6,6 @@
   Company: Companies will have subscriptions to applications
   Event: Events represent state changes in subscriptions or user assignments
 """
-
 import logging
 logger = logging.getLogger('clustermanager')
 
@@ -61,6 +60,7 @@ class Cluster(db.Model):
 
     # provisioning, running, paused, destroyed (if we want to keep info about destroyed)
     cluster_state = db.Column(db.String(100))
+    components = db.Column(db.Text())
 
     def __init__(self, uuid, owner_id, num_workers=5, cpus=4, memory=16384,
                  disk_capacity=100,
@@ -73,7 +73,8 @@ class Cluster(db.Model):
                  master_ip='0.0.0.0',
                  master_password='',
                  cluster_name='pizza',
-                 cluster_state='Provisioning'):
+                 cluster_state='Provisioning',
+                 components=None):
         self.uuid = uuid
         self.owner_id = owner_id
 
@@ -95,6 +96,7 @@ class Cluster(db.Model):
 
         self.cluster_name = cluster_name
         self.cluster_state = cluster_state
+        self.components = components
 
     @classmethod
     def by_uuid(cls, uuid):

@@ -16,7 +16,20 @@
 </ul>
 <br>
 <script>
-
+    var stopAllIntervals = function() {
+        $.get(
+                $SCRIPT_ROOT + '/cluster_status_only?cluster_id={{cluster_id}}',
+                {},
+                function (clst) {
+                    if (clst == "Running") {
+                        for (i = 0; i < intervals.length; i++ ){
+                            clearInterval(intervals[i]);
+                        }
+                    }
+                }
+        );
+    }
+    
     var refreshMasterIp = function () {
         $.get(
                 $SCRIPT_ROOT + '/master_ip?cluster_id={{cluster_id}}',
@@ -51,10 +64,11 @@
                 $SCRIPT_ROOT + '/cluster_stdout?cluster_id={{cluster_id}}',
                 {},
                 function (data) {
-                    var tempScrollTop = $(window).scrollTop();
+                    //var tempScrollTop = $(window).scrollTop();
                     $("#stdout").text(data);
+                    $("#stdout").scrollTop($("#stdout").prop("scrollHeight"));
                     //setTimeout(function() {
-                    $(window).scrollTop(tempScrollTop);
+                    //$(window).scrollTop(tempScrollTop);
                     //}, 25);
                     var clst = "{{ cluster_state }}";
                     if (clst == "Running") {
@@ -80,6 +94,8 @@
     var masterpass_interval = setInterval(refreshMasterPassword, {{ refresh_interval }});
     var stdout_interval = setInterval(refreshStdout, {{ refresh_interval }});
     var stderr_interval = setInterval(refreshStderr, {{ refresh_interval }});
+    var stopall_interval = setInterval(stopAllIntervals, {{ refresh_interval }});
+    var intervals = [masterip_interval,masterpass_interval,stderr_interval,stdout_interval,stopall_interval]
 </script>
 <h3>Cluster provisioning log:</h3>
 <pre id="stdout"></pre>

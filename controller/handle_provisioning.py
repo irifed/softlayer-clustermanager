@@ -33,7 +33,7 @@ def extract_master_ip(output):
 
 def remove_cluster_dir(cluster_id):
     shutil.rmtree(vagrantroot + '.' + cluster_id)
-
+    logger.debug("deleted cluster dir = "+vagrantroot + '.' + cluster_id)
 
 # borrowed from https://gist.github.com/soxofaan/9217628
 class AsynchronousFileReader(threading.Thread):
@@ -186,18 +186,22 @@ def async_destroy_cluster(cluster_id):
 
 def get_cluster_status(cluster_id):
     cluster_home = vagrantroot + '.' + cluster_id
-
-    stdout = open(cluster_home + '/vagrant.out', 'r')
-    stderr = open(cluster_home + '/vagrant.err', 'r')
-
-    cluster_log = stdout.read()
-    cluster_err = stderr.read()
-
     master_ip = ''
-    if 'master: SSH address:' in cluster_log:
-        master_ip = extract_master_ip(cluster_log)
-
-    return master_ip, cluster_log, cluster_err
+    cluster_log = ''
+    cluster_err = ''
+    try:
+	    stdout = open(cluster_home + '/vagrant.out', 'r')
+	    stderr = open(cluster_home + '/vagrant.err', 'r')
+	    cluster_log = stdout.read()
+	    cluster_err = stderr.read()
+	    if 'master: SSH address:' in cluster_log:
+	        master_ip = extract_master_ip(cluster_log)
+    except FileNotFoundError:
+	    stdout = open(cluster_home + '/vagrant.out', 'a').close()
+	    stderr = open(cluster_home + '/vagrant.err', 'a').close()
+	    logger.debug("no vagrant.out & err files")
+    finally:
+	    return master_ip, cluster_log, cluster_err
 
 
 def get_master_password_from_sl(master_ip, cluster_id):
@@ -260,6 +264,5 @@ def set_cluster_state(cluster_id, state):
     with app.test_request_context():
         cluster = Cluster.by_uuid(cluster_id)
 
-        # TODO if cluster is not found, it probably was deleted during provisioning, so need to destroy it
         cluster.cluster_state = state
         db.session.commit()

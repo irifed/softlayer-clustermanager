@@ -1,5 +1,6 @@
 import logging
 import uuid
+import pickle
 
 
 from models.models import db, Cluster
@@ -14,6 +15,7 @@ def create_cluster(owner_id, sl_config, components, cluster_name):
     cluster_id = str(uuid.uuid4())
 
     logger.info('Creating cluster id = {}'.format(cluster_id))
+    serial_components = pickle.dumps(components)
 
     # [0] key is always irina's
     if len(sl_config.sl_ssh_keys) > 1:
@@ -35,7 +37,8 @@ def create_cluster(owner_id, sl_config, components, cluster_name):
         sl_ssh_key=sl_ssh_key,
 
         sl_domain=sl_config.sl_domain,
-        sl_datacenter=sl_config.sl_datacenter
+        sl_datacenter=sl_config.sl_datacenter,
+        components = serial_components
     )
     db.session.add(cluster)
     db.session.commit()
